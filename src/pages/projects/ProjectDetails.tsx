@@ -76,20 +76,20 @@ const ProjectDetails = () => {
       </Paper>
 
       {tabValue === 0 && (
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+        <Grid component="div" container spacing={3}>
+        <Grid component="div" size={{ xs: 12, md: 8 }}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Typography variant="h6" gutterBottom>Project Details</Typography>
               <Divider sx={{ my: 2 }} />
               
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+              <Grid component="div" container spacing={2}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">Client</Typography>
                     <Typography variant="body1">{mockProject.client}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">Status</Typography>
                     <Chip 
@@ -99,7 +99,7 @@ const ProjectDetails = () => {
                     />
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">Start Date</Typography>
                     <Typography variant="body1">
@@ -107,7 +107,7 @@ const ProjectDetails = () => {
                     </Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">End Date</Typography>
                     <Typography variant="body1">
@@ -115,13 +115,13 @@ const ProjectDetails = () => {
                     </Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">Contract Value</Typography>
                     <Typography variant="body1">${mockProject.value.toLocaleString()}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">Progress</Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -136,13 +136,13 @@ const ProjectDetails = () => {
                     </Box>
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid component="div" size={{ xs: 12}}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">Description</Typography>
                     <Typography variant="body1">{mockProject.description}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid component="div" size={{ xs: 12}}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary">Address</Typography>
                     <Typography variant="body1">{mockProject.address}</Typography>
@@ -152,7 +152,7 @@ const ProjectDetails = () => {
             </Paper>
           </Grid>
           
-          <Grid item xs={12} md={4}>
+          <Grid component="div" size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Typography variant="h6" gutterBottom>Client Contact</Typography>
               <Divider sx={{ my: 2 }} />
