@@ -83,7 +83,7 @@ const Register = () => {
     }}>
       <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 600 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+          <Typography variant="h4" component="h1" gutterBottom>
             Create Account
           </Typography>
           <Typography variant="body1" color="text.secondary">

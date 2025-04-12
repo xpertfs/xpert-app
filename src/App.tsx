@@ -7,6 +7,10 @@ import MainLayout from './components/layout/MainLayout';
 // Pages
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
+import ProjectList from './pages/projects/ProjectList';
+import ProjectCreate from './pages/projects/ProjectCreate';
+import ProjectDetails from './pages/projects/ProjectDetails';
+import ProjectEdit from './pages/projects/ProjectEdit';
 import Employees from './pages/Employees';
 import Expenses from './pages/Expenses';
 import Materials from './pages/Materials';
@@ -36,7 +40,15 @@ function App() {
           </AuthGuard>
         }>
           <Route index element={<Dashboard />} />
-          <Route path="projects" element={<Projects />} />
+          
+          {/* Projects Routes */}
+          <Route path="projects" element={<Projects />}>
+            <Route index element={<ProjectList />} />
+            <Route path="new" element={<ProjectCreate />} />
+            <Route path=":id" element={<ProjectDetails />} />
+            <Route path=":id/edit" element={<ProjectEdit />} />
+          </Route>
+          
           <Route path="employees" element={<Employees />} />
           <Route path="expenses" element={<Expenses />} />
           <Route path="materials" element={<Materials />} />
