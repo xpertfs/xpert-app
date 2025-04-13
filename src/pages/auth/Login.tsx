@@ -1,23 +1,17 @@
 // src/pages/auth/Login.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Box, 
-  Paper, 
-  Typography, 
-  TextField, 
-  Button, 
-  Link, 
-  InputAdornment, 
-  IconButton,
-  CircularProgress
+  Box, Paper, Typography, TextField, Button, Link, 
+  InputAdornment, IconButton, Alert, CircularProgress 
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { login } from '../../features/auth/authSlice';
+import { login, clearError } from '../../features/auth/authSlice';
+import type { RootState, AppDispatch } from '../../features/store';
 
 // Form validation schema
 const schema = yup.object({
@@ -32,9 +26,10 @@ type LoginFormData = {
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  
+  const { isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
   
   const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: yupResolver(schema),
@@ -44,24 +39,15 @@ const Login = () => {
     }
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    
-    try {
-      // This would be an API call in a real app
-      setTimeout(() => {
-        // Simulate successful login
-        dispatch(login({
-          id: '1',
-          name: 'John Doe',
-          email: data.email,
-          role: 'admin'
-        }));
-        navigate('/');
-      }, 1000);
-    } catch (error) {
-      console.error('Login failed', error);
+  useEffect(() => {
+    // If already authenticated, redirect to dashboard
+    if (isAuthenticated) {
+      navigate('/');
     }
+  }, [isAuthenticated, navigate]);
+
+  const onSubmit = async (data: LoginFormData) => {
+    await dispatch(login(data));
   };
 
   const handleTogglePassword = () => {
@@ -85,6 +71,12 @@ const Login = () => {
             Sign in to your account
           </Typography>
         </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} onClose={() => dispatch(clearError())}>
+            {error}
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Controller
@@ -152,6 +144,11 @@ const Login = () => {
             Don't have an account?{' '}
             <Link component={RouterLink} to="/register" underline="hover">
               Sign up
+            </Link>
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Link component={RouterLink} to="/forgot-password" underline="hover">
+              Forgot password?
             </Link>
           </Typography>
         </Box>

@@ -1,22 +1,17 @@
 // src/pages/auth/Register.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Box, 
-  Paper, 
-  Typography, 
-  TextField, 
-  Button, 
-  Link, 
-  InputAdornment, 
-  IconButton,
-  CircularProgress,
-  Grid
+  Box, Paper, Typography, TextField, Button, Link, 
+  InputAdornment, IconButton, Alert, CircularProgress, Grid 
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { register as registerUser, clearError } from '../../features/auth/authSlice';
+import type { RootState, AppDispatch } from '../../features/store';
 
 // Form validation schema
 const schema = yup.object({
@@ -29,6 +24,7 @@ const schema = yup.object({
   confirmPassword: yup.string()
     .required('Confirm your password')
     .oneOf([yup.ref('password')], 'Passwords must match'),
+  companyName: yup.string().required('Company name is required'),
 }).required();
 
 type RegisterFormData = {
@@ -37,12 +33,15 @@ type RegisterFormData = {
   email: string;
   password: string;
   confirmPassword: string;
+  companyName: string;
 };
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  
+  const { isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
   
   const { control, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
     resolver: yupResolver(schema),
@@ -52,21 +51,19 @@ const Register = () => {
       email: '',
       password: '',
       confirmPassword: '',
+      companyName: '',
     }
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
-    
-    try {
-      // This would be an API call in a real app
-      setTimeout(() => {
-        // Simulate successful registration
-        navigate('/login');
-      }, 1000);
-    } catch (error) {
-      console.error('Registration failed', error);
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
     }
+  }, [isAuthenticated, navigate]);
+
+  const onSubmit = async (data: RegisterFormData) => {
+    const { confirmPassword, ...registerData } = data;
+    await dispatch(registerUser(registerData));
   };
 
   const handleTogglePassword = () => {
@@ -91,41 +88,47 @@ const Register = () => {
           </Typography>
         </Box>
 
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} onClose={() => dispatch(clearError())}>
+            {error}
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid component="div" container spacing={2}>
             <Grid component="div" size={{ xs: 12, sm: 6 }}>
-                <Controller
+              <Controller
                 name="firstName"
                 control={control}
                 render={({ field }) => (
-                    <TextField
+                  <TextField
                     {...field}
                     label="First Name"
                     variant="outlined"
                     fullWidth
                     error={!!errors.firstName}
                     helperText={errors.firstName?.message}
-                    />
+                  />
                 )}
-                />
+              />
             </Grid>
             <Grid component="div" size={{ xs: 12, sm: 6 }}>
-                <Controller
+              <Controller
                 name="lastName"
                 control={control}
                 render={({ field }) => (
-                    <TextField
+                  <TextField
                     {...field}
                     label="Last Name"
                     variant="outlined"
                     fullWidth
                     error={!!errors.lastName}
                     helperText={errors.lastName?.message}
-                    />
+                  />
                 )}
-                />
+              />
             </Grid>
-        </Grid>
+          </Grid>
 
           <Controller
             name="email"
@@ -139,6 +142,22 @@ const Register = () => {
                 margin="normal"
                 error={!!errors.email}
                 helperText={errors.email?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="companyName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Company Name"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                error={!!errors.companyName}
+                helperText={errors.companyName?.message}
               />
             )}
           />

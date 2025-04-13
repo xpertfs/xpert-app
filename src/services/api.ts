@@ -11,6 +11,7 @@ const api = axios.create({
 });
 
 // Add request interceptor for auth token
+// src/services/api.ts (update)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -18,9 +19,6 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-  },
-  (error) => {
-    return Promise.reject(error);
   }
 );
 
