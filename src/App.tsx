@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from './features/store';
+import { ThemeProvider } from './contexts/ThemeContext';
 import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
@@ -26,37 +27,39 @@ import Settings from './pages/Settings';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Dashboard />} />
-            
-            {/* Projects Routes */}
-            <Route path="projects" element={<Projects />}>
-              <Route index element={<ProjectList />} />
-              <Route path="new" element={<ProjectCreate />} />
-              <Route path=":id" element={<ProjectDetails />} />
-              <Route path=":id/edit" element={<ProjectEdit />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Dashboard />} />
+              
+              {/* Projects Routes */}
+              <Route path="projects" element={<Projects />}>
+                <Route index element={<ProjectList />} />
+                <Route path="new" element={<ProjectCreate />} />
+                <Route path=":id" element={<ProjectDetails />} />
+                <Route path=":id/edit" element={<ProjectEdit />} />
+              </Route>
+              
+              <Route path="employees" element={<Employees />} />
+              <Route path="expenses" element={<Expenses />} />
+              <Route path="materials" element={<Materials />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
-            
-            <Route path="employees" element={<Employees />} />
-            <Route path="expenses" element={<Expenses />} />
-            <Route path="materials" element={<Materials />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

@@ -11,6 +11,7 @@ import {
   AccountTree
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTheme as useMuiTheme } from '@mui/material/styles';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -19,6 +20,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const muiTheme = useMuiTheme();
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
@@ -58,9 +60,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
               sx={{ 
                 borderRadius: collapsed ? 0 : '10px',
                 mx: collapsed ? 0 : 1,
-                backgroundColor: isActive(item.path) ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
+                backgroundColor: isActive(item.path) 
+                  ? muiTheme.palette.mode === 'dark' 
+                    ? 'rgba(255, 255, 255, 0.08)' 
+                    : 'rgba(0, 0, 0, 0.04)'
+                  : 'transparent',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                  backgroundColor: muiTheme.palette.mode === 'dark' 
+                    ? 'rgba(255, 255, 255, 0.12)' 
+                    : 'rgba(0, 0, 0, 0.08)',
                 }
               }}
             >
@@ -87,10 +95,23 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
               onClick={() => navigate(item.path)}
               sx={{ 
                 borderRadius: collapsed ? 0 : '10px',
-                mx: collapsed ? 0 : 1
+                mx: collapsed ? 0 : 1,
+                backgroundColor: isActive(item.path) 
+                  ? muiTheme.palette.mode === 'dark' 
+                    ? 'rgba(255, 255, 255, 0.08)' 
+                    : 'rgba(0, 0, 0, 0.04)'
+                  : 'transparent',
+                '&:hover': {
+                  backgroundColor: muiTheme.palette.mode === 'dark' 
+                    ? 'rgba(255, 255, 255, 0.12)' 
+                    : 'rgba(0, 0, 0, 0.08)',
+                }
               }}
             >
-              <ListItemIcon sx={{ minWidth: collapsed ? 'auto' : 40 }}>
+              <ListItemIcon sx={{ 
+                minWidth: collapsed ? 'auto' : 40,
+                color: isActive(item.path) ? 'primary.main' : 'inherit'
+              }}>
                 {item.icon}
               </ListItemIcon>
               {!collapsed && (

@@ -1,12 +1,13 @@
 // src/components/layout/MainLayout.tsx
 import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Box, CssBaseline, Drawer, AppBar, Toolbar, Typography, IconButton, Avatar, Menu, MenuItem, useTheme } from '@mui/material';
+import { Box, CssBaseline, Drawer, AppBar, Toolbar, Typography, IconButton, Avatar, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
 import { Menu as MenuIcon, ChevronLeft, Notifications, DarkMode, LightMode, ExitToApp } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../features/store';
+import { styled, useTheme as useMuiTheme } from '@mui/material/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../features/store';
 import { logout } from '../../features/auth/authSlice';
+import { useTheme } from '../../contexts/ThemeContext';
 import Sidebar from './Sidebar';
 
 const drawerWidth = 260;
@@ -24,7 +25,19 @@ const MainLayout = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const theme = useTheme();
+  const muiTheme = useMuiTheme();
+  const { darkMode, toggleDarkMode } = useTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'));
+  
+  // Get user from Redux store
+  const { user } = useSelector((state: RootState) => state.auth);
+  
+  // Close drawer on mobile by default
+  useState(() => {
+    if (isMobile) {
+      setOpen(false);
+    }
+  });
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -39,15 +52,21 @@ const MainLayout = () => {
     navigate('/login');
     handleMenuClose();
   };
+  
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user) return 'U';
+    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
+  };
 
   return (
-    <Box sx={{ display: 'flex', backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', backgroundColor: muiTheme.palette.background.default, minHeight: '100vh' }}>
       <CssBaseline />
       <AppBar position="fixed" elevation={0} sx={{ 
-        zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: 'white',
-        color: 'text.primary',
-        borderBottom: `1px solid ${theme.palette.divider}`
+        zIndex: muiTheme.zIndex.drawer + 1,
+        backgroundColor: muiTheme.palette.background.paper,
+        color: muiTheme.palette.text.primary,
+        borderBottom: `1px solid ${muiTheme.palette.divider}`
       }}>
         <Toolbar>
           <IconButton
@@ -64,14 +83,18 @@ const MainLayout = () => {
           <IconButton>
             <Notifications />
           </IconButton>
-          <IconButton sx={{ ml: 1 }}>
-            <DarkMode />
-          </IconButton>
+          <Tooltip title={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+            <IconButton sx={{ ml: 1 }} onClick={toggleDarkMode}>
+              {darkMode ? <LightMode /> : <DarkMode />}
+            </IconButton>
+          </Tooltip>
           <IconButton 
             sx={{ ml: 1 }}
             onClick={handleMenuOpen}
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>JD</Avatar>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+              {getUserInitials()}
+            </Avatar>
           </IconButton>
           <Menu
             anchorEl={anchorEl}
@@ -86,8 +109,8 @@ const MainLayout = () => {
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Account Settings</MenuItem>
+            <MenuItem onClick={() => { navigate('/settings'); handleMenuClose(); }}>Profile</MenuItem>
+            <MenuItem onClick={() => { navigate('/settings'); handleMenuClose(); }}>Account Settings</MenuItem>
             <MenuItem onClick={handleLogout}>
               <ExitToApp sx={{ mr: 1 }} fontSize="small" />
               Logout
@@ -96,25 +119,26 @@ const MainLayout = () => {
         </Toolbar>
       </AppBar>
       <Drawer
-        variant="permanent"
+        variant={isMobile ? "temporary" : "permanent"}
         open={open}
+        onClose={() => isMobile && setOpen(false)}
         sx={{
           width: open ? drawerWidth : 72,
           flexShrink: 0,
-          transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
+          transition: muiTheme.transitions.create('width', {
+            easing: muiTheme.transitions.easing.sharp,
+            duration: muiTheme.transitions.duration.enteringScreen,
           }),
           [`& .MuiDrawer-paper`]: { 
             width: open ? drawerWidth : 72, 
             boxSizing: 'border-box',
-            transition: theme.transitions.create('width', {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
+            transition: muiTheme.transitions.create('width', {
+              easing: muiTheme.transitions.easing.sharp,
+              duration: muiTheme.transitions.duration.enteringScreen,
             }),
-            backgroundColor: '#f8f9fa',
-            borderRight: 'none',
-            boxShadow: '0 0 10px rgba(0,0,0,0.05)'
+            backgroundColor: muiTheme.palette.background.paper,
+            borderRight: `1px solid ${muiTheme.palette.divider}`,
+            boxShadow: darkMode ? 'none' : '0 0 10px rgba(0,0,0,0.05)'
           },
         }}
       >
@@ -125,7 +149,7 @@ const MainLayout = () => {
         flexGrow: 1, 
         p: 3,
         pt: 10,
-        backgroundColor: '#f7f9fc'
+        backgroundColor: muiTheme.palette.background.default
       }}>
         <Outlet />
       </Box>

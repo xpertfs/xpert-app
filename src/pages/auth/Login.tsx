@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { login, clearError } from '../../features/auth/authSlice';
 import type { RootState, AppDispatch } from '../../features/store';
+import { useTheme as useMuiTheme } from '@mui/material/styles';
 
 // Form validation schema
 const schema = yup.object({
@@ -28,6 +29,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const muiTheme = useMuiTheme();
   
   const { isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
   
@@ -60,7 +62,7 @@ const Login = () => {
       minHeight: '100vh',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#f7f9fc'
+      backgroundColor: muiTheme.palette.background.default,
     }}>
       <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 450 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>

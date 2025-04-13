@@ -1,5 +1,6 @@
 import { Typography, Box, Paper, Tabs, Tab } from '@mui/material';
 import { useState } from 'react';
+import ThemeSettings from '../components/settings/ThemeSettings';
 
 const Settings = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -21,32 +22,48 @@ const Settings = () => {
         </Tabs>
       </Paper>
       
-      <Paper sx={{ p: 3 }}>
-        {tabValue === 0 && (
-          <Box>
+      {tabValue === 0 && (
+        <Box>
+          <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>Company Settings</Typography>
             <Typography variant="body1">Company settings will be displayed here</Typography>
-          </Box>
-        )}
-        {tabValue === 1 && (
-          <Box>
+          </Paper>
+        </Box>
+      )}
+      
+      {tabValue === 1 && (
+        <Box>
+          <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>User Management</Typography>
             <Typography variant="body1">User settings will be displayed here</Typography>
-          </Box>
-        )}
-        {tabValue === 2 && (
-          <Box>
-            <Typography variant="h6" gutterBottom>Preferences</Typography>
-            <Typography variant="body1">User preferences will be displayed here</Typography>
-          </Box>
-        )}
-        {tabValue === 3 && (
-          <Box>
+          </Paper>
+        </Box>
+      )}
+      
+      {tabValue === 2 && (
+        <Box>
+          <ThemeSettings />
+          
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>Notification Preferences</Typography>
+            <Typography variant="body1">Notification settings will be displayed here</Typography>
+          </Paper>
+          
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>Regional Settings</Typography>
+            <Typography variant="body1">Date formats, time zones and language preferences will be displayed here</Typography>
+          </Paper>
+        </Box>
+      )}
+      
+      {tabValue === 3 && (
+        <Box>
+          <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>Integrations</Typography>
             <Typography variant="body1">Integration settings will be displayed here</Typography>
-          </Box>
-        )}
-      </Paper>
+          </Paper>
+        </Box>
+      )}
     </Box>
   );
 };
