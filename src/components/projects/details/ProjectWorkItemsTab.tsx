@@ -46,6 +46,7 @@ interface WorkItemFormData {
   name: string;
   unit: string;
   unitPrice: number;
+  description?: string;
 }
 
 // Form validation schema
@@ -57,6 +58,7 @@ const workItemSchema = yup.object().shape({
     .transform((value) => (isNaN(value) ? undefined : value))
     .required('Unit price is required')
     .min(0, 'Unit price must be positive'),
+  description: yup.string(),
 });
 
 // Helper function to format currency
@@ -86,6 +88,7 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
       name: '',
       unit: '',
       unitPrice: 0,
+      description: '',
     }
   });
 
@@ -102,6 +105,7 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
         name: editingWorkItem.name,
         unit: editingWorkItem.unit,
         unitPrice: editingWorkItem.unitPrice,
+        description: editingWorkItem.description || '',
       });
     } else {
       reset({
@@ -109,6 +113,7 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
         name: '',
         unit: '',
         unitPrice: 0,
+        description: '',
       });
     }
   }, [editingWorkItem, reset]);
@@ -116,7 +121,6 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
   const fetchWorkItems = async () => {
     setLoading(true);
     try {
-      // Assuming there's a service method to get work items for a project
       const response = await workItemService.getProjectWorkItems(project.id);
       setWorkItems(response.data);
       setError(null);
@@ -146,7 +150,17 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
     try {
       if (editingWorkItem) {
         // Update existing work item
-        const response = await workItemService.updateWorkItem(project.id, editingWorkItem.id, data);
+        const response = await workItemService.updateWorkItem(
+          project.id, 
+          editingWorkItem.id, 
+          {
+            name: data.name,
+            unit: data.unit,
+            unitPrice: data.unitPrice,
+            description: data.description,
+          }
+        );
+        
         // Update work item in the state
         setWorkItems(workItems.map(item => 
           item.id === editingWorkItem.id ? response.data : item
@@ -154,6 +168,7 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
       } else {
         // Create new work item
         const response = await workItemService.createWorkItem(project.id, data);
+        
         // Add new work item to the state
         setWorkItems([...workItems, response.data]);
       }
@@ -240,13 +255,14 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
                 <TableCell>Name</TableCell>
                 <TableCell>Unit</TableCell>
                 <TableCell align="right">Unit Price</TableCell>
+                <TableCell>Description</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {workItems.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
+                  <TableCell colSpan={6} align="center">
                     <Typography sx={{ py: 2 }}>
                       No work items found. Add your first work item by clicking the "Add Work Item" button.
                     </Typography>
@@ -259,6 +275,7 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.unit}</TableCell>
                     <TableCell align="right">{formatCurrency(item.unitPrice)}</TableCell>
+                    <TableCell>{item.description || '-'}</TableCell>
                     <TableCell align="center">
                       <Tooltip title="Edit work item">
                         <IconButton 
@@ -381,6 +398,25 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
                       InputProps={{
                         startAdornment: '$',
                       }}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid component="div" size={{ xs: 12 }}>
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Description (Optional)"
+                      fullWidth
+                      margin="normal"
+                      multiline
+                      rows={3}
+                      error={!!errors.description}
+                      helperText={errors.description?.message}
+                      disabled={formSubmitting}
                     />
                   )}
                 />

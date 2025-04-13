@@ -4,8 +4,10 @@ import api from './api';
 // Types
 export interface WorkItem {
   id: string;
+  projectId: string;
   code: string;
   name: string;
+  description?: string;
   unit: string;
   unitPrice: number;
 }
@@ -13,12 +15,14 @@ export interface WorkItem {
 export interface WorkItemCreateData {
   code: string;
   name: string;
+  description?: string;
   unit: string;
   unitPrice: number;
 }
 
 export interface WorkItemUpdateData {
   name?: string;
+  description?: string;
   unit?: string;
   unitPrice?: number;
 }

@@ -487,11 +487,13 @@ const ProjectSubScopeWorkItemsPanel: React.FC<SubScopeWorkItemsProps> = ({
                         {...field}
                         label="Work Item"
                       >
-                        {availableWorkItems.map(item => (
-                          <MenuItem key={item.id} value={item.id}>
-                            {item.code} - {item.name} ({formatCurrency(item.unitPrice)} per {item.unit})
-                          </MenuItem>
-                        ))}
+                        {availableWorkItems
+                          .filter(item => !subScopeWorkItems.some(swi => swi.workItemId === item.id))
+                          .map(item => (
+                            <MenuItem key={item.id} value={item.id}>
+                              {item.code} - {item.name} ({formatCurrency(item.unitPrice)} per {item.unit})
+                            </MenuItem>
+                          ))}
                       </Select>
                       {assignErrors.workItemId && (
                         <FormHelperText>{assignErrors.workItemId.message}</FormHelperText>
