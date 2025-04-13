@@ -23,7 +23,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import projectService, { ProjectCreateData } from '../../services/project.service';
 import clientService, { Client } from '../../services/client.service';
-import contractorService, { Contractor } from '../../services/contractor.service';
+import ContractorSelector from '../../components/contractors/ContractorSelector';
 
 // Define explicit type for form data
 interface ProjectFormData {
@@ -73,14 +73,12 @@ const schema = yup.object().shape({
 const ProjectCreate = () => {
   const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
-  const [contractors, setContractors] = useState<Contractor[]>([]);
   const [loading, setLoading] = useState(false);
   const [clientsLoading, setClientsLoading] = useState(true);
-  const [contractorsLoading, setContractorsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   
-  const { control, handleSubmit, formState: { errors } } = useForm<ProjectFormData>({
+  const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<ProjectFormData>({
     resolver: yupResolver(schema) as any, // Type assertion to bypass the type error
     defaultValues: {
       name: '',
@@ -99,31 +97,25 @@ const ProjectCreate = () => {
     }
   });
 
-  // Fetch clients and contractors on component mount
+  // Watch for contractorId changes
+  const contractorId = watch('contractorId');
+
+  // Fetch clients on component mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchClients = async () => {
       try {
         setClientsLoading(true);
-        setContractorsLoading(true);
-        
-        // Fetch clients and contractors concurrently
-        const [clientsResponse, contractorsResponse] = await Promise.all([
-          clientService.getClients(),
-          contractorService.getContractors()
-        ]);
-        
-        setClients(clientsResponse.data);
-        setContractors(contractorsResponse.data);
+        const response = await clientService.getClients();
+        setClients(response.data);
       } catch (err: any) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load data. Please try again.');
+        console.error('Error fetching clients:', err);
+        setError('Failed to load clients. Please try again.');
       } finally {
         setClientsLoading(false);
-        setContractorsLoading(false);
       }
     };
 
-    fetchData();
+    fetchClients();
   }, []);
 
   // Handle form submission
@@ -131,13 +123,15 @@ const ProjectCreate = () => {
     setLoading(true);
     setError(null);
     
+    console.log('Form data:', data); // Debug log to check form data
+    
     // Create a cleaned version of the data to send to the API
     const projectData: ProjectCreateData = {
       name: data.name,
       code: data.code,
       description: data.description || undefined,
       clientId: data.clientId,
-      contractorId: data.contractorId || undefined,
+      contractorId: data.contractorId || undefined, // Make sure this is properly handled
       status: data.status,
       value: data.value || undefined,
       address: data.address || undefined,
@@ -148,8 +142,11 @@ const ProjectCreate = () => {
       endDate: data.endDate ? data.endDate.toISOString() : undefined,
     };
     
+    console.log('API request data:', projectData); // Debug log to check API request data
+    
     try {
       const response = await projectService.createProject(projectData);
+      console.log('API response:', response.data); // Debug log to check API response
       
       setFormSubmitted(true);
       
@@ -256,7 +253,7 @@ const ProjectCreate = () => {
                     control={control}
                     render={({ field }) => (
                       <FormControl fullWidth error={!!errors.clientId} disabled={loading || clientsLoading}>
-                        <InputLabel>Client</InputLabel>
+                        <InputLabel required>Client</InputLabel>
                         <Select
                           {...field}
                           label="Client"
@@ -284,27 +281,13 @@ const ProjectCreate = () => {
                     name="contractorId"
                     control={control}
                     render={({ field }) => (
-                      <FormControl fullWidth disabled={loading || contractorsLoading}>
-                        <InputLabel>General Contractor</InputLabel>
-                        <Select
-                          {...field}
-                          label="General Contractor"
-                          value={field.value || ''}
-                        >
-                          <MenuItem value="">None</MenuItem>
-                          {contractorsLoading ? (
-                            <MenuItem value="" disabled>Loading contractors...</MenuItem>
-                          ) : contractors.length > 0 ? (
-                            contractors.map((contractor) => (
-                              <MenuItem key={contractor.id} value={contractor.id}>
-                                {contractor.name} ({contractor.code})
-                              </MenuItem>
-                            ))
-                          ) : (
-                            <MenuItem value="" disabled>No contractors available</MenuItem>
-                          )}
-                        </Select>
-                      </FormControl>
+                      <ContractorSelector
+                        value={field.value}
+                        onChange={(value) => field.onChange(value)}
+                        error={!!errors.contractorId}
+                        helperText={errors.contractorId?.message}
+                        disabled={loading}
+                      />
                     )}
                   />
                 </Grid>
