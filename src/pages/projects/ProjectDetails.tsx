@@ -22,7 +22,8 @@ import expenseService, { Expense } from '../../services/expense.service';
 
 // Import tab components
 import ProjectOverviewTab from '../../components/projects/details/ProjectOverviewTab';
-import ProjectScopesTab from '../../components/projects/details/ProjectScopesTab';
+import ProjectScopesTabEnhanced from '../../components/projects/details/ProjectScopesTabEnhanced';
+import ProjectWorkItemsTab from '../../components/projects/details/ProjectWorkItemsTab';
 import ProjectLaborTab from '../../components/projects/details/ProjectLaborTab';
 import ProjectExpensesTab from '../../components/projects/details/ProjectExpensesTab';
 import ProjectFinancialTab from '../../components/projects/details/ProjectFinancialTab';
@@ -63,9 +64,9 @@ const ProjectDetails = () => {
 
   useEffect(() => {
     // Only fetch related data when the relevant tab is selected
-    if (tabValue === 2 && timeEntries.length === 0) {
+    if (tabValue === 3 && timeEntries.length === 0) {
       fetchTimeEntries();
-    } else if (tabValue === 3 && expenses.length === 0) {
+    } else if (tabValue === 4 && expenses.length === 0) {
       fetchExpenses();
     }
   }, [tabValue]);
@@ -168,6 +169,7 @@ const ProjectDetails = () => {
       <Paper sx={{ mb: 3 }}>
         <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
           <Tab label="Overview" />
+          <Tab label="Work Items" />
           <Tab label="Scopes" />
           <Tab label="Labor" />
           <Tab label="Expenses" />
@@ -177,9 +179,10 @@ const ProjectDetails = () => {
 
       {/* Tab Content */}
       {tabValue === 0 && <ProjectOverviewTab project={project} />}
-      {tabValue === 1 && <ProjectScopesTab project={project} />}
-      {tabValue === 2 && <ProjectLaborTab timeEntries={timeEntries} loading={timeEntriesLoading} />}
-      {tabValue === 3 && <ProjectExpensesTab expenses={expenses} loading={expensesLoading} />}
+      {tabValue === 1 && <ProjectWorkItemsTab project={project} />}
+      {tabValue === 2 && <ProjectScopesTabEnhanced project={project} />}
+      {tabValue === 3 && <ProjectLaborTab timeEntries={timeEntries} loading={timeEntriesLoading} />}
+      {tabValue === 4 && <ProjectExpensesTab expenses={expenses} loading={expensesLoading} />}
       {tabValue === 5 && <ProjectFinancialTab project={project} />}
     </Box>
   );
