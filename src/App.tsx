@@ -19,6 +19,7 @@ import ProjectList from './pages/projects/ProjectList';
 import ProjectCreate from './pages/projects/ProjectCreate';
 import ProjectDetails from './pages/projects/ProjectDetails';
 import ProjectEdit from './pages/projects/ProjectEdit';
+import Clients from './pages/Clients';
 import Employees from './pages/Employees';
 import Expenses from './pages/Expenses';
 import Materials from './pages/Materials';
@@ -40,6 +41,9 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Dashboard />} />
+              
+              {/* Clients Route */}
+              <Route path="clients" element={<Clients />} />
               
               {/* Projects Routes */}
               <Route path="projects" element={<Projects />}>

@@ -8,7 +8,8 @@ import {
   Inventory, 
   BarChart, 
   Settings,
-  AccountTree
+  AccountTree,
+  BusinessCenter
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme as useMuiTheme } from '@mui/material/styles';
@@ -24,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+    { text: 'Clients', icon: <BusinessCenter />, path: '/clients' }, // Added Clients menu item
     { text: 'Projects', icon: <Business />, path: '/projects' },
     { text: 'Employees', icon: <People />, path: '/employees' },
     { text: 'Expenses', icon: <Receipt />, path: '/expenses' },
