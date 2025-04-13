@@ -25,6 +25,8 @@ import Expenses from './pages/Expenses';
 import Materials from './pages/Materials';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import Users from './pages/Users';
+import UserEdit from 'pages/UserEdit';
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
               <Route path="materials" element={<Materials />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="user-edit" element={<UserEdit/>}/>
+              <Route path="users" element={<Users />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Route>
