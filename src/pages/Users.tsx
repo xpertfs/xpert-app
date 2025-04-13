@@ -36,7 +36,8 @@ import {
   Delete as DeleteIcon,
   People,
   Refresh as RefreshIcon,
-  Person as PersonIcon
+  Person as PersonIcon,
+  LockReset as LockResetIcon
 } from '@mui/icons-material';
 import LoadingState from '../components/common/LoadingState';
 import EmptyState from '../components/common/EmptyState';
@@ -364,7 +365,7 @@ const Users = () => {
                         title="Reset password"
                         disabled={currentUser && user.id === currentUser.id}
                       >
-                        <span className="material-icons-outlined" style={{ fontSize: 18 }}>lock_reset</span>
+                        <LockResetIcon/>
                       </IconButton>
                       <IconButton 
                         size="small" 
