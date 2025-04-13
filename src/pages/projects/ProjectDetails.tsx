@@ -236,7 +236,7 @@ const ProjectDetails = () => {
 {tabValue === 0 && (
   <Grid component="div" container spacing={3}>
     <Grid component="div" size={{ xs: 12, md: 8 }}>
-      <Paper sx={{ p: 3, height: '100%' }}>
+      <Paper sx={{ p: 3, height: '98%' }}>
         <Typography variant="h6" gutterBottom>Project Details</Typography>
         <Divider sx={{ my: 2 }} />
         
@@ -327,6 +327,45 @@ const ProjectDetails = () => {
     </Grid>
     
     <Grid component="div" size={{ xs: 12, md: 4 }}>
+
+      {/* FINANCIAL SUMMARY */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" gutterBottom>Financial Summary</Typography>
+        <Divider sx={{ my: 2 }} />
+        
+        <List disablePadding>
+          <ListItem disablePadding sx={{ pb: 1 }}>
+            <ListItemText 
+              primary={formatCurrency(project.finances.completedValue)}
+              secondary="Completed Value"
+            />
+          </ListItem>
+          <ListItem disablePadding sx={{ pb: 1 }}>
+            <ListItemText 
+              primary={formatCurrency(project.finances.totalCost)}
+              secondary="Total Cost"
+            />
+          </ListItem>
+          <ListItem disablePadding sx={{ pb: 1 }}>
+            <ListItemText 
+              primary={formatCurrency(project.finances.profit)}
+              secondary="Current Profit"
+              primaryTypographyProps={{
+                color: project.finances.profit >= 0 ? 'success.main' : 'error.main'
+              }}
+            />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemText 
+              primary={`${project.finances.profitMargin.toFixed(2)}%`}
+              secondary="Profit Margin"
+              primaryTypographyProps={{
+                color: project.finances.profitMargin >= 0 ? 'success.main' : 'error.main'
+              }}
+            />
+          </ListItem>
+        </List>
+      </Paper>
       {/* CLIENT CONTACT */}
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>Client Contact</Typography>
@@ -382,45 +421,6 @@ const ProjectDetails = () => {
           </List>
         </Paper>
       )}
-
-      {/* FINANCIAL SUMMARY */}
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>Financial Summary</Typography>
-        <Divider sx={{ my: 2 }} />
-        
-        <List disablePadding>
-          <ListItem disablePadding sx={{ pb: 1 }}>
-            <ListItemText 
-              primary={formatCurrency(project.finances.completedValue)}
-              secondary="Completed Value"
-            />
-          </ListItem>
-          <ListItem disablePadding sx={{ pb: 1 }}>
-            <ListItemText 
-              primary={formatCurrency(project.finances.totalCost)}
-              secondary="Total Cost"
-            />
-          </ListItem>
-          <ListItem disablePadding sx={{ pb: 1 }}>
-            <ListItemText 
-              primary={formatCurrency(project.finances.profit)}
-              secondary="Current Profit"
-              primaryTypographyProps={{
-                color: project.finances.profit >= 0 ? 'success.main' : 'error.main'
-              }}
-            />
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemText 
-              primary={`${project.finances.profitMargin.toFixed(2)}%`}
-              secondary="Profit Margin"
-              primaryTypographyProps={{
-                color: project.finances.profitMargin >= 0 ? 'success.main' : 'error.main'
-              }}
-            />
-          </ListItem>
-        </List>
-      </Paper>
     </Grid>
   </Grid>
 )}

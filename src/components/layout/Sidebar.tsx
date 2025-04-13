@@ -27,9 +27,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+    { text: 'Projects', icon: <Business />, path: '/projects' },
     { text: 'Clients', icon: <BusinessCenter />, path: '/clients' },
     { text: 'Contractors', icon: <Engineering />, path: '/contractors' },
-    { text: 'Projects', icon: <Business />, path: '/projects' },
     { text: 'Employees', icon: <People />, path: '/employees' },
     { text: 'Expenses', icon: <Receipt />, path: '/expenses' },
     { text: 'Materials', icon: <Inventory />, path: '/materials' },
