@@ -94,7 +94,8 @@ const ProjectList = () => {
     ? projects.filter(project => 
         project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         project.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.client.name.toLowerCase().includes(searchQuery.toLowerCase())
+        project.client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (project.contractor && project.contractor.name.toLowerCase().includes(searchQuery.toLowerCase()))
       )
     : projects;
 
@@ -142,7 +143,7 @@ const ProjectList = () => {
       <Paper sx={{ p: 2, mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Search projects by name, code or client..."
+          placeholder="Search projects by name, code, client or contractor..."
           variant="outlined"
           value={searchQuery}
           onChange={handleSearchChange}
@@ -172,8 +173,8 @@ const ProjectList = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Project Name</TableCell>
-                <TableCell>Client</TableCell>
+                <TableCell>Project</TableCell>
+                <TableCell>Contractor</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell align="right">Value</TableCell>
                 <TableCell>Timeline</TableCell>
@@ -215,11 +216,13 @@ const ProjectList = () => {
                       <Box>
                         <Typography variant="body1">{project.name}</Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {project.code}
+                          {project.client.code}
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>{project.client.name}</TableCell>
+                    <TableCell>
+                      {project.contractor ? project.contractor.name : '-'}
+                    </TableCell>
                     <TableCell>
                       <Chip 
                         label={formatStatus(project.status)} 
@@ -228,7 +231,7 @@ const ProjectList = () => {
                       />
                     </TableCell>
                     <TableCell align="right">
-                      ${project.value.toLocaleString()}
+                      ${new Intl.NumberFormat('en-US').format(project.value)}
                     </TableCell>
                     <TableCell>
                       {project.startDate && project.endDate ? (
