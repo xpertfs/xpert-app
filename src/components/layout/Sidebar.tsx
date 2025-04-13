@@ -32,7 +32,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
     { text: 'Expenses', icon: <Receipt />, path: '/expenses' },
     { text: 'Materials', icon: <Inventory />, path: '/materials' },
     { text: 'Reports', icon: <BarChart />, path: '/reports' },
-    { text: 'User Edit', icon: <BarChart />, path: '/user-edit' },
   ];
 
   const bottomItems = [
