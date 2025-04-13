@@ -381,7 +381,7 @@ const Users = () => {
                         color="primary"
                         onClick={() => handleOpenPasswordDialog(user.id)}
                         title="Reset password"
-                        disabled={currentUser && user.id === currentUser.id}
+                        disabled={currentUser ? (user.id === currentUser.id) : false}
                       >
                         <LockResetIcon/>
                       </IconButton>
@@ -390,7 +390,7 @@ const Users = () => {
                         color="error"
                         onClick={() => handleDeleteUser(user.id)}
                         title="Delete user"
-                        disabled={currentUser && user.id === currentUser.id}
+                        disabled={currentUser ? (user.id === currentUser.id) : false}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
