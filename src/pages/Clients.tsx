@@ -39,19 +39,29 @@ import * as yup from 'yup';
 import clientService, { Client, ClientCreateData, ClientUpdateData } from '../services/client.service';
 
 // Form validation schema
-const clientSchema = yup.object({
+const clientSchema = yup.object().shape({
   name: yup.string().required('Client name is required'),
   code: yup.string().required('Client code is required'),
-  address: yup.string(),
-  city: yup.string(),
-  state: yup.string(),
-  zip: yup.string(),
-  phone: yup.string(),
-  email: yup.string().email('Invalid email'),
-  contactName: yup.string(),
-}).required();
+  address: yup.string().default(''),
+  city: yup.string().default(''),
+  state: yup.string().default(''),
+  zip: yup.string().default(''),
+  phone: yup.string().default(''),
+  email: yup.string().email('Invalid email').default(''),
+  contactName: yup.string().default(''),
+});
 
-type ClientFormData = yup.InferType<typeof clientSchema>;
+interface ClientFormData {
+  name: string;
+  code: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  phone: string;
+  email: string;
+  contactName: string;
+}
 
 const Clients = () => {
   const [clients, setClients] = useState<Client[]>([]);
