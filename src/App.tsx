@@ -20,6 +20,7 @@ import ProjectCreate from './pages/projects/ProjectCreate';
 import ProjectDetails from './pages/projects/ProjectDetails';
 import ProjectEdit from './pages/projects/ProjectEdit';
 import Clients from './pages/Clients';
+import Contractors from './pages/Contractors';
 import Employees from './pages/Employees';
 import Expenses from './pages/Expenses';
 import Materials from './pages/Materials';
@@ -45,6 +46,9 @@ function App() {
               
               {/* Clients Route */}
               <Route path="clients" element={<Clients />} />
+              
+              {/* Contractors Route */}
+              <Route path="contractors" element={<Contractors />} />
               
               {/* Projects Routes */}
               <Route path="projects" element={<Projects />}>

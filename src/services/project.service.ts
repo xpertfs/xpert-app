@@ -23,6 +23,14 @@ export interface Project {
     phone: string;
     contactName: string;
   };
+  contractor?: {
+    id: string;
+    name: string;
+    code: string;
+    email: string;
+    phone: string;
+    contactName: string;
+  };
   scopes: Scope[];
   finances: {
     contractValue: number;
@@ -73,6 +81,7 @@ export interface ProjectCreateData {
   status?: string;
   value?: number;
   clientId: string;
+  contractorId?: string;
 }
 
 export interface ProjectUpdateData {
@@ -87,6 +96,7 @@ export interface ProjectUpdateData {
   status?: string;
   value?: number;
   clientId?: string;
+  contractorId?: string;
 }
 
 export interface ScopeCreateData {
@@ -115,6 +125,7 @@ const projectService = {
     search?: string;
     status?: string;
     clientId?: string;
+    contractorId?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
   }) => {

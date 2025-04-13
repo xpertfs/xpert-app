@@ -23,6 +23,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import projectService, { ProjectCreateData } from '../../services/project.service';
 import clientService, { Client } from '../../services/client.service';
+import contractorService, { Contractor } from '../../services/contractor.service';
 
 // Define explicit type for form data
 interface ProjectFormData {
@@ -30,6 +31,7 @@ interface ProjectFormData {
   code: string;
   description: string | null;
   clientId: string;
+  contractorId: string | null;
   status: string;
   value: number | null;
   address: string | null;
@@ -46,6 +48,7 @@ const schema = yup.object().shape({
   code: yup.string().required('Project code is required'),
   description: yup.string().nullable().default(null),
   clientId: yup.string().required('Client is required'),
+  contractorId: yup.string().nullable().default(null),
   status: yup.string().required('Status is required'),
   value: yup
     .number()
@@ -70,8 +73,10 @@ const schema = yup.object().shape({
 const ProjectCreate = () => {
   const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
+  const [contractors, setContractors] = useState<Contractor[]>([]);
   const [loading, setLoading] = useState(false);
   const [clientsLoading, setClientsLoading] = useState(true);
+  const [contractorsLoading, setContractorsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   
@@ -82,6 +87,7 @@ const ProjectCreate = () => {
       code: '',
       description: null,
       clientId: '',
+      contractorId: null,
       status: 'PLANNING',
       value: null,
       address: null,
@@ -93,22 +99,31 @@ const ProjectCreate = () => {
     }
   });
 
-  // Fetch clients on component mount
+  // Fetch clients and contractors on component mount
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchData = async () => {
       try {
         setClientsLoading(true);
-        const response = await clientService.getClients();
-        setClients(response.data);
+        setContractorsLoading(true);
+        
+        // Fetch clients and contractors concurrently
+        const [clientsResponse, contractorsResponse] = await Promise.all([
+          clientService.getClients(),
+          contractorService.getContractors()
+        ]);
+        
+        setClients(clientsResponse.data);
+        setContractors(contractorsResponse.data);
       } catch (err: any) {
-        console.error('Error fetching clients:', err);
-        setError('Failed to load clients. Please try again.');
+        console.error('Error fetching data:', err);
+        setError('Failed to load data. Please try again.');
       } finally {
         setClientsLoading(false);
+        setContractorsLoading(false);
       }
     };
 
-    fetchClients();
+    fetchData();
   }, []);
 
   // Handle form submission
@@ -122,6 +137,7 @@ const ProjectCreate = () => {
       code: data.code,
       description: data.description || undefined,
       clientId: data.clientId,
+      contractorId: data.contractorId || undefined,
       status: data.status,
       value: data.value || undefined,
       address: data.address || undefined,
@@ -259,6 +275,35 @@ const ProjectCreate = () => {
                           )}
                         </Select>
                         {errors.clientId && <FormHelperText>{errors.clientId.message}</FormHelperText>}
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
+                  <Controller
+                    name="contractorId"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth disabled={loading || contractorsLoading}>
+                        <InputLabel>General Contractor</InputLabel>
+                        <Select
+                          {...field}
+                          label="General Contractor"
+                          value={field.value || ''}
+                        >
+                          <MenuItem value="">None</MenuItem>
+                          {contractorsLoading ? (
+                            <MenuItem value="" disabled>Loading contractors...</MenuItem>
+                          ) : contractors.length > 0 ? (
+                            contractors.map((contractor) => (
+                              <MenuItem key={contractor.id} value={contractor.id}>
+                                {contractor.name} ({contractor.code})
+                              </MenuItem>
+                            ))
+                          ) : (
+                            <MenuItem value="" disabled>No contractors available</MenuItem>
+                          )}
+                        </Select>
                       </FormControl>
                     )}
                   />
