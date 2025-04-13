@@ -1,4 +1,4 @@
-// src/components/users/UserEditForm.tsx
+// src/components/users/UserCreateForm.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -18,23 +18,27 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { User, UserUpdateData } from '../../services/user.service';
+import { UserCreateData } from '../../services/user.service';
 import userService from '../../services/user.service';
 
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
   lastName: yup.string().required('Last name is required'),
   email: yup.string().email('Invalid email').required('Email is required'),
+  password: yup.string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters'),
+  confirmPassword: yup.string()
+    .required('Confirm your password')
+    .oneOf([yup.ref('password')], 'Passwords must match'),
   role: yup.string().required('Role is required'),
-  active: yup.boolean()
 }).required();
 
-type UserFormProps = {
-  user: User;
-  onComplete: (updatedUser?: User) => void;
+type UserCreateFormProps = {
+  onComplete: () => void;
 };
 
-const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
+const UserCreateForm: React.FC<UserCreateFormProps> = ({ onComplete }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -42,11 +46,12 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-      active: user.active
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      role: 'EMPLOYEE'
     }
   });
 
@@ -55,24 +60,24 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
     setError(null);
 
     try {
-      const updateData: UserUpdateData = {
+      const userData: UserCreateData = {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        role: data.role,
-        active: data.active
+        password: data.password,
+        role: data.role
       };
 
-      const response = await userService.updateUser(user.id, updateData);
+      await userService.createUser(userData);
       setSuccess(true);
       
-      // Close form after successful update with a delay
+      // Close form after successful creation with a delay
       setTimeout(() => {
-        onComplete(response.data);
+        onComplete();
       }, 2000);
     } catch (err: any) {
-      console.error('Error updating user:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to update user');
+      console.error('Error creating user:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to create user');
     } finally {
       setLoading(false);
     }
@@ -80,7 +85,7 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
 
   return (
     <Paper sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h6" gutterBottom>Edit User</Typography>
+      <Typography variant="h6" gutterBottom>Create New User</Typography>
       <Divider sx={{ mb: 3 }} />
       
       {error && (
@@ -88,10 +93,10 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
           {error}
         </Alert>
       )}
-      
+
       {success && (
         <Alert severity="success" sx={{ mb: 3 }}>
-          User updated successfully!
+          User created successfully!
         </Alert>
       )}
 
@@ -148,6 +153,40 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
           </Grid>
           <Grid component="div" size={{ xs: 12, md: 6 }}>
             <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  disabled={loading || success}
+                />
+              )}
+            />
+          </Grid>
+          <Grid component="div" size={{ xs: 12, md: 6 }}>
+            <Controller
+              name="confirmPassword"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Confirm Password"
+                  type="password"
+                  fullWidth
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword?.message}
+                  disabled={loading || success}
+                />
+              )}
+            />
+          </Grid>
+          <Grid component="div" size={{ xs: 12 }}>
+            <Controller
               name="role"
               control={control}
               render={({ field }) => (
@@ -167,30 +206,11 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
               )}
             />
           </Grid>
-          <Grid component="div" size={{ xs: 12, md: 6 }}>
-            <Controller
-              name="active"
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth disabled={loading || success}>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    value={field.value ? 'active' : 'inactive'}
-                    onChange={(e) => field.onChange(e.target.value === 'active')}
-                    label="Status"
-                  >
-                    <MenuItem value="active">Active</MenuItem>
-                    <MenuItem value="inactive">Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-            />
-          </Grid>
           <Grid component="div" size={{ xs: 12 }}>
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
               <Button
                 variant="outlined"
-                onClick={() => onComplete()}
+                onClick={onComplete}
                 sx={{ mr: 2 }}
                 disabled={loading}
               >
@@ -202,7 +222,7 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
                 disabled={loading || success}
                 startIcon={loading ? <CircularProgress size={20} /> : null}
               >
-                {loading ? 'Updating...' : 'Update User'}
+                {loading ? 'Creating...' : 'Create User'}
               </Button>
             </Box>
           </Grid>
@@ -212,4 +232,4 @@ const UserEditForm: React.FC<UserFormProps> = ({ user, onComplete }) => {
   );
 };
 
-export default UserEditForm;
+export default UserCreateForm;

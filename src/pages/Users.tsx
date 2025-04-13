@@ -45,6 +45,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../features/store';
 import userService, { User } from '../services/user.service';
 import UserEditForm from '../components/users/UserEditForm';
+import UserCreateForm from '../components/users/UserCreateForm';
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -53,6 +54,7 @@ const Users = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -72,6 +74,14 @@ const Users = () => {
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     setIsEditing(true);
+    setIsCreating(false);
+  };
+
+  // Function to handle create user
+  const handleCreateUser = () => {
+    setIsCreating(true);
+    setIsEditing(false);
+    setEditingUser(null);
   };
 
   // Function to handle complete edit
@@ -82,6 +92,12 @@ const Users = () => {
     }
     setEditingUser(null);
     setIsEditing(false);
+  };
+
+  // Function to handle create complete
+  const handleCreateComplete = () => {
+    setIsCreating(false);
+    fetchUsers(); // Refresh the users list
   };
 
   const fetchUsers = async () => {
@@ -239,7 +255,7 @@ const Users = () => {
           <Button 
             variant="contained" 
             startIcon={<AddIcon />}
-            onClick={() => alert('Create user functionality not implemented yet')}
+            onClick={handleCreateUser}
           >
             New User
           </Button>
@@ -272,7 +288,9 @@ const Users = () => {
       )}
       
       {/* Main content */}
-      {isEditing && editingUser ? (
+      {isCreating ? (
+        <UserCreateForm onComplete={handleCreateComplete} />
+      ) : isEditing && editingUser ? (
         <UserEditForm 
           user={editingUser} 
           onComplete={handleEditComplete} 
@@ -308,7 +326,7 @@ const Users = () => {
                         message="Get started by creating your first user."
                         icon={People}
                         actionText="Create User" 
-                        onAction={() => alert('Create user functionality not implemented yet')}
+                        onAction={handleCreateUser}
                       />
                     )}
                   </TableCell>
@@ -407,8 +425,8 @@ const Users = () => {
                 Password updated successfully!
               </Alert>
             )}
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
+            <Grid component="div" container spacing={3}>
+              <Grid component="div" size={{ xs: 12 }}>
                 <TextField
                   label="New Password"
                   type="password"
@@ -419,7 +437,7 @@ const Users = () => {
                   disabled={passwordSubmitting || passwordSuccess}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid component="div" size={{ xs: 12 }}>
                 <TextField
                   label="Confirm New Password"
                   type="password"
