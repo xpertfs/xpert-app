@@ -133,10 +133,22 @@ const ProjectWorkItemsTab: React.FC<ProjectWorkItemsTabProps> = ({ project }) =>
   };
 
   // Open dialog for creating or editing a work item
-  const handleOpenDialog = (workItem: WorkItem | null = null) => {
-    setEditingWorkItem(workItem);
-    setOpenDialog(true);
-  };
+const handleOpenDialog = (workItem: WorkItem | null = null) => {
+  setEditingWorkItem(workItem);
+  
+  // Reset form completely when creating a new work item
+  if (!workItem) {
+    reset({
+      code: '',
+      name: '',
+      unit: '',
+      unitPrice: 0,
+      description: '',
+    });
+  }
+  
+  setOpenDialog(true);
+};
 
   // Close dialog
   const handleCloseDialog = () => {
