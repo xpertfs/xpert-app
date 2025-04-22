@@ -31,6 +31,11 @@ export interface SubScopeUpdateData {
   percentComplete?: number;
 }
 
+export interface WorkItemAssignmentData {
+  workItemId: string;
+  quantity: number;
+}
+
 const scopeService = {
   // Get all scopes for a project
   getProjectScopes: (projectId: string) => {
@@ -57,16 +62,6 @@ const scopeService = {
     return api.delete(`/projects/${projectId}/scopes/${scopeId}`);
   },
   
-  // Get all sub-scopes for a scope
-  getSubScopes: (projectId: string, scopeId: string) => {
-    return api.get<SubScope[]>(`/projects/${projectId}/scopes/${scopeId}/sub-scopes`);
-  },
-  
-  // Get a single sub-scope by ID
-  getSubScope: (projectId: string, scopeId: string, subScopeId: string) => {
-    return api.get<SubScope>(`/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}`);
-  },
-  
   // Create a new sub-scope
   createSubScope: (projectId: string, scopeId: string, data: SubScopeCreateData) => {
     return api.post<SubScope>(`/projects/${projectId}/scopes/${scopeId}/sub-scopes`, data);
@@ -82,11 +77,64 @@ const scopeService = {
     return api.delete(`/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}`);
   },
   
-  // Update sub-scope completion percentage
-  updateSubScopeCompletion: (projectId: string, scopeId: string, subScopeId: string, percentComplete: number) => {
-    return api.put<SubScope>(
-      `/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}/completion`,
-      { percentComplete }
+  // Add work item to sub-scope
+  addWorkItemToSubScope: (
+    projectId: string,
+    scopeId: string,
+    subScopeId: string,
+    workItemId: string,
+    quantity: number
+  ) => {
+    return api.post(
+      `/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}/work-items`,
+      { workItemId, quantity }
+    );
+  },
+  
+  // Update work item quantity in sub-scope
+  updateWorkItemQuantity: (
+    projectId: string,
+    scopeId: string,
+    subScopeId: string,
+    workItemId: string,
+    quantity: number
+  ) => {
+    return api.put(
+      `/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}/work-items/${workItemId}`,
+      { quantity }
+    );
+  },
+  
+  // Update work item completion in sub-scope
+  updateWorkItemCompletion: (
+    projectId: string,
+    scopeId: string,
+    subScopeId: string,
+    workItemId: string,
+    completed: number
+  ) => {
+    return api.put(
+      `/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}/work-items/${workItemId}/completion`,
+      { completed }
+    );
+  },
+  
+  // Remove work item from sub-scope
+  removeWorkItemFromSubScope: (
+    projectId: string,
+    scopeId: string,
+    subScopeId: string,
+    workItemId: string
+  ) => {
+    return api.delete(
+      `/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}/work-items/${workItemId}`
+    );
+  },
+  
+  // Get all work items for a sub-scope
+  getSubScopeWorkItems: (projectId: string, scopeId: string, subScopeId: string) => {
+    return api.get(
+      `/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}/work-items`
     );
   }
 };

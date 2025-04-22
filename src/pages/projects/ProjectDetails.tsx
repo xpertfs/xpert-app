@@ -22,7 +22,7 @@ import expenseService, { Expense } from '../../services/expense.service';
 
 // Import tab components
 import ProjectOverviewTab from '../../components/projects/details/ProjectOverviewTab';
-import ProjectScopesTabEnhanced from '../../components/projects/details/ProjectScopesTabEnhanced';
+import ProjectScopesTabRestructured from '../../components/projects/details/ProjectScopesTabRestructured';
 import ProjectWorkItemsTab from '../../components/projects/details/ProjectWorkItemsTab';
 import ProjectLaborTab from '../../components/projects/details/ProjectLaborTab';
 import ProjectExpensesTab from '../../components/projects/details/ProjectExpensesTab';
@@ -180,7 +180,7 @@ const ProjectDetails = () => {
       {/* Tab Content */}
       {tabValue === 0 && <ProjectOverviewTab project={project} />}
       {tabValue === 1 && <ProjectWorkItemsTab project={project} />}
-      {tabValue === 2 && <ProjectScopesTabEnhanced project={project} />}
+      {tabValue === 2 && <ProjectScopesTabRestructured project={project} />}  
       {tabValue === 3 && <ProjectLaborTab timeEntries={timeEntries} loading={timeEntriesLoading} />}
       {tabValue === 4 && <ProjectExpensesTab expenses={expenses} loading={expensesLoading} />}
       {tabValue === 5 && <ProjectFinancialTab project={project} />}
