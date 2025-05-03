@@ -208,38 +208,6 @@ const ProjectSubScopeWorkItemsPanel: React.FC<SubScopeWorkItemsProps> = ({
     }
   };
 
-  // Handle updating completion
-  const onCompletionSubmit = async (data: WorkItemCompletionFormData) => {
-    if (!editingWorkItemId) return;
-    
-    setFormSubmitting(true);
-    try {
-      const response = await workItemService.updateSubScopeWorkItem(
-        projectId,
-        scopeId,
-        subScope.id,
-        editingWorkItemId,
-        { completed: data.completed }
-      );
-      
-      // Update work item in the state
-      setSubScopeWorkItems(subScopeWorkItems.map(item => 
-        item.id === editingWorkItemId ? response.data : item
-      ));
-      
-      // Close dialog after successful submission
-      handleCloseCompletionDialog();
-      
-      // Update completion percentage
-      onUpdateCompletion();
-    } catch (err: any) {
-      console.error('Error updating completion:', err);
-      setError(err.response?.data?.message || 'Failed to update completion');
-    } finally {
-      setFormSubmitting(false);
-    }
-  };
-
   // Handle removing a work item
   const handleRemoveWorkItem = async (workItemId: string) => {
     if (window.confirm('Are you sure you want to remove this work item from the sub-scope?')) {
@@ -536,78 +504,6 @@ const ProjectSubScopeWorkItemsPanel: React.FC<SubScopeWorkItemsProps> = ({
               startIcon={formSubmitting ? <CircularProgress size={20} /> : null}
             >
               {formSubmitting ? 'Assigning...' : 'Assign'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-      
-      {/* Work Item Completion Dialog */}
-      <Dialog
-        open={openCompletionDialog}
-        onClose={handleCloseCompletionDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          Update Completion
-        </DialogTitle>
-        <form onSubmit={handleCompletionSubmit(onCompletionSubmit)}>
-          <DialogContent dividers>
-            <Grid component="div" container spacing={2}>
-              <Grid component="div" size={{ xs: 12 }}>
-                {editingWorkItemId && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2">Work Item:</Typography>
-                    <Typography variant="body1">
-                      {subScopeWorkItems.find(item => item.id === editingWorkItemId)?.workItem.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Total Quantity: {subScopeWorkItems.find(item => item.id === editingWorkItemId)?.quantity}
-                    </Typography>
-                  </Box>
-                )}
-                <Controller
-                  name="completed"
-                  control={completionControl}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Completed Quantity"
-                      type="number"
-                      fullWidth
-                      margin="normal"
-                      error={!!completionErrors.completed}
-                      helperText={
-                        completionErrors.completed?.message || 
-                        `Enter the total completed quantity (0 - ${subScopeWorkItems.find(item => item.id === editingWorkItemId)?.quantity})`
-                      }
-                      disabled={formSubmitting}
-                      InputProps={{
-                        inputProps: { 
-                          min: 0, 
-                          max: subScopeWorkItems.find(item => item.id === editingWorkItemId)?.quantity 
-                        }
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button 
-              onClick={handleCloseCompletionDialog} 
-              disabled={formSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit"
-              variant="contained"
-              disabled={formSubmitting}
-              startIcon={formSubmitting ? <CircularProgress size={20} /> : null}
-            >
-              {formSubmitting ? 'Updating...' : 'Update'}
             </Button>
           </DialogActions>
         </form>

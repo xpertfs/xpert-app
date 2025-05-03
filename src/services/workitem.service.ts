@@ -37,6 +37,7 @@ export interface SubScopeWorkItem {
 }
 
 export interface SubScopeWorkItemUpdateData {
+  workItemId: string;
   quantity?: number;
   completed?: number;
 }

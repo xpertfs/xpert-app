@@ -15,6 +15,7 @@ export interface Project {
   endDate: string;
   status: string;
   value: number;
+  workItems: WorkItem[];
   client: {
     id: string;
     name: string;
@@ -48,14 +49,17 @@ export interface Scope {
   name: string;
   code: string;
   subScopes: SubScope[];
+  description: string;
 }
 
 export interface SubScope {
   id: string;
   name: string;
   code: string;
+  description: string;
   percentComplete: number;
   workItems: WorkItem[];
+  workItemQuantities: WorkItemQuantity[];
 }
 
 export interface WorkItem {
@@ -66,6 +70,14 @@ export interface WorkItem {
   quantity: number;
   completed: number;
   unitPrice: number;
+}
+
+export interface WorkItemQuantity {
+  id: string;
+  workItem: WorkItem;
+  workItemId: string;
+  quantity: number;
+  completed: number;
 }
 
 export interface ProjectCreateData {

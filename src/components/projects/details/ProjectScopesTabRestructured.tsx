@@ -209,7 +209,7 @@ const ProjectScopesTabRestructured: React.FC<ProjectScopesTabProps> = ({ project
         );
         
         // Auto-assign all project work items to this new sub-scope
-        const workItems = project.workItem || [];
+        const workItems = project.workItems || [];
         if (workItems.length > 0) {
           // Create assignments for each work item with default quantity = 0
           for (const workItem of workItems) {

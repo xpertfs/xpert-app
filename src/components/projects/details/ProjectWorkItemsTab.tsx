@@ -40,7 +40,6 @@ import * as yup from 'yup';
 import { Project } from '../../../services/project.service';
 import workItemService, { WorkItem } from '../../../services/workitem.service';
 
-// Types for form data
 interface WorkItemFormData {
   code: string;
   name: string;
@@ -50,7 +49,7 @@ interface WorkItemFormData {
 }
 
 // Form validation schema
-const workItemSchema = yup.object().shape({
+const workItemSchema = yup.object({
   code: yup.string().required('Code is required'),
   name: yup.string().required('Name is required'),
   unit: yup.string().required('Unit is required'),
@@ -58,8 +57,8 @@ const workItemSchema = yup.object().shape({
     .transform((value) => (isNaN(value) ? undefined : value))
     .required('Unit price is required')
     .min(0, 'Unit price must be positive'),
-  description: yup.string(),
-});
+  description: yup.string().optional(),
+}).required();
 
 // Helper function to format currency
 const formatCurrency = (amount: number) => {

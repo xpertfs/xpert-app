@@ -125,7 +125,7 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
             subScope.id,
             workItemQuantity.workItemId, // Make sure this is correctly used
             { 
-              workItemId: workItemQuantity.workItemId, // Add this line to pass workItemId in the request body
+              workItemId: workItemQuantity.workItemId,
               quantity,
               completed: completedValue 
             }
@@ -307,7 +307,7 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
                       </TableCell>
                       <TableCell align="right">
                         {formatCurrency(wiq.completed * wiq.workItem.unitPrice)}
-                    </TableCell>
+                      </TableCell>
                       <TableCell align="right">
                         {formatCurrency(wiq.quantity * wiq.workItem.unitPrice)}
                       </TableCell>

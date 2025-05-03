@@ -28,12 +28,13 @@ interface ScopeFormDialogProps {
 const createScopeSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
   code: yup.string().required('Code is required'),
-  description: yup.string(),
+  description: yup.string().optional(),
 });
 
 const editScopeSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
-  description: yup.string(),
+  code: yup.string().required('Code is required'),
+  description: yup.string().optional(),
 });
 
 const ScopeFormDialog: React.FC<ScopeFormDialogProps> = ({
