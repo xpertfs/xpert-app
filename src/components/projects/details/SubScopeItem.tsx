@@ -246,8 +246,9 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
                   <TableCell>Unit</TableCell>
                   <TableCell align="right">Unit Price</TableCell>
                   <TableCell align="right">Quantity</TableCell>
-                  <TableCell align="right">Completed</TableCell>
-                  <TableCell align="right">Amount</TableCell>
+                  <TableCell align="right">Completed Quantity</TableCell>
+                  <TableCell align="right">Completed Amount</TableCell> 
+                  <TableCell align="right">Total Amount</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -304,6 +305,9 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
                           </Box>
                         )}
                       </TableCell>
+                      <TableCell align="right">
+                        {formatCurrency(wiq.completed * wiq.workItem.unitPrice)}
+                    </TableCell>
                       <TableCell align="right">
                         {formatCurrency(wiq.quantity * wiq.workItem.unitPrice)}
                       </TableCell>
