@@ -58,19 +58,23 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [completed, setCompleted] = useState<Record<string, number>>({});
   const [editMode, setEditMode] = useState(false);
 
-  // Initialize quantities on component mount or when subScope changes
+  // Initialize quantities and completed on component mount or when subScope changes
   React.useEffect(() => {
     const initialQuantities: Record<string, number> = {};
+    const initialCompleted: Record<string, number> = {};
     
     if (subScope.workItemQuantities) {
       subScope.workItemQuantities.forEach(wiq => {
         initialQuantities[wiq.id] = wiq.quantity;
+        initialCompleted[wiq.id] = wiq.completed;
       });
     }
     
     setQuantities(initialQuantities);
+    setCompleted(initialCompleted);
   }, [subScope]);
 
   const handleExpand = () => {
@@ -87,6 +91,18 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
     }
   };
 
+  const handleCompletedChange = (id: string, value: string) => {
+    const numValue = parseFloat(value);
+    const maxQuantity = quantities[id] || 0;
+    
+    if (!isNaN(numValue) && numValue >= 0 && numValue <= maxQuantity) {
+      setCompleted({
+        ...completed,
+        [id]: numValue
+      });
+    }
+  };
+
   const handleEditMode = () => {
     setEditMode(true);
   };
@@ -95,17 +111,23 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
     setLoading(true);
     
     try {
-      // Save each work item quantity
+      // Save each work item quantity and completion
       const promises = Object.entries(quantities).map(([id, quantity]) => {
         const workItemQuantity = subScope.workItemQuantities.find(wiq => wiq.id === id);
+        const completedValue = completed[id] || 0;
         
-        if (workItemQuantity && workItemQuantity.quantity !== quantity) {
+        if (workItemQuantity && 
+            (workItemQuantity.quantity !== quantity || 
+             workItemQuantity.completed !== completedValue)) {
           return workItemService.updateSubScopeWorkItem(
             projectId,
             scopeId,
             subScope.id,
             workItemQuantity.workItemId,
-            { quantity }
+            { 
+              quantity,
+              completed: completedValue 
+            }
           );
         }
         
@@ -254,17 +276,34 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                          <Typography variant="body2">
-                            {wiq.completed} / {wiq.quantity}
-                          </Typography>
-                          <Box sx={{ width: 60, ml: 1 }}>
-                            <LinearProgress
-                              variant="determinate"
-                              value={wiq.quantity > 0 ? (wiq.completed / wiq.quantity) * 100 : 0}
-                            />
+                        {editMode ? (
+                          <TextField
+                            type="number"
+                            size="small"
+                            value={completed[wiq.id] || 0}
+                            onChange={(e) => handleCompletedChange(wiq.id, e.target.value)}
+                            InputProps={{
+                              inputProps: { 
+                                min: 0, 
+                                max: quantities[wiq.id] || wiq.quantity,
+                                step: 0.01 
+                              }
+                            }}
+                            sx={{ width: 80 }}
+                          />
+                        ) : (
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                            <Typography variant="body2">
+                              {wiq.completed} / {wiq.quantity}
+                            </Typography>
+                            <Box sx={{ width: 60, ml: 1 }}>
+                              <LinearProgress
+                                variant="determinate"
+                                value={wiq.quantity > 0 ? (wiq.completed / wiq.quantity) * 100 : 0}
+                              />
+                            </Box>
                           </Box>
-                        </Box>
+                        )}
                       </TableCell>
                       <TableCell align="right">
                         {formatCurrency(wiq.quantity * wiq.workItem.unitPrice)}
