@@ -54,12 +54,12 @@ const scopeService = {
   
   // Update an existing scope
   updateScope: (projectId: string, scopeId: string, data: ScopeUpdateData) => {
-    return api.put<Scope>(`/projects/${projectId}/scopes/${scopeId}`, data);
+    return api.put<Scope>(`/scopes/${scopeId}`, data);
   },
   
   // Delete a scope
   deleteScope: (projectId: string, scopeId: string) => {
-    return api.delete(`/projects/${projectId}/scopes/${scopeId}`);
+    return api.delete(`/scopes/${scopeId}`);
   },
   
   // Create a new sub-scope
@@ -69,12 +69,12 @@ const scopeService = {
   
   // Update an existing sub-scope
   updateSubScope: (projectId: string, scopeId: string, subScopeId: string, data: SubScopeUpdateData) => {
-    return api.put<SubScope>(`/scopes/${scopeId}/sub-scopes/${subScopeId}`, data);
+    return api.put<SubScope>(`/sub-scopes/${subScopeId}`, data);
   },
   
   // Delete a sub-scope
   deleteSubScope: (projectId: string, scopeId: string, subScopeId: string) => {
-    return api.delete(`/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}`);
+    return api.delete(`/sub-scopes/${subScopeId}`);
   },
   
   // Add work item to sub-scope
