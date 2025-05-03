@@ -93,7 +93,6 @@ const workItemService = {
     workItemId: string,
     data: SubScopeWorkItemUpdateData
   ) => {
-    // Fix the endpoint to match what's defined in workItem.routes.ts
     return api.put<SubScopeWorkItem>(
       `/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}/work-items/${workItemId}`,
       data

@@ -111,20 +111,21 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
     setLoading(true);
     
     try {
-      // Save each work item quantity and completion
       const promises = Object.entries(quantities).map(([id, quantity]) => {
         const workItemQuantity = subScope.workItemQuantities.find(wiq => wiq.id === id);
+        if (!workItemQuantity) return Promise.resolve();
+        
         const completedValue = completed[id] || 0;
         
-        if (workItemQuantity && 
-            (workItemQuantity.quantity !== quantity || 
-             workItemQuantity.completed !== completedValue)) {
+        if (workItemQuantity.quantity !== quantity || 
+            workItemQuantity.completed !== completedValue) {
           return workItemService.updateSubScopeWorkItem(
             projectId,
             scopeId,
             subScope.id,
-            workItemQuantity.workItemId,
+            workItemQuantity.workItemId, // Make sure this is correctly used
             { 
+              workItemId: workItemQuantity.workItemId, // Add this line to pass workItemId in the request body
               quantity,
               completed: completedValue 
             }
@@ -135,8 +136,6 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
       });
       
       await Promise.all(promises);
-      
-      // Exit edit mode and notify parent
       setEditMode(false);
       onUpdate();
     } catch (error) {
@@ -144,7 +143,7 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   // Calculate completion percentage
   const calculateCompletion = () => {
