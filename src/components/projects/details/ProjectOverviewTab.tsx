@@ -100,7 +100,7 @@ const ProjectOverviewTab: React.FC<ProjectOverviewTabProps> = ({ project }) => {
             <Grid component="div" size={{ xs: 12, md: 6 }}>
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" color="text.secondary">Contract Value</Typography>
-                <Typography variant="body1">{formatCurrency(project.value)}</Typography>
+                <Typography variant="body1">{formatCurrency(project.finances.contractValue)}</Typography>
               </Box>
             </Grid>
             <Grid component="div" size={{ xs: 12, md: 6 }}>

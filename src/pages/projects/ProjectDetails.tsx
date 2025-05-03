@@ -97,8 +97,18 @@ const ProjectDetails = () => {
     }
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = async (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+    
+    // Refresh project data when Overview tab is selected
+    if (newValue === 0 && id) {
+      try {
+        const response = await projectService.getProjectById(id);
+        setProject(response.data);
+      } catch (err: any) {
+        console.error('Error refreshing project data:', err);
+      }
+    }
   };
 
   if (loading) {

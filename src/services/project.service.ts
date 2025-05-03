@@ -109,6 +109,12 @@ export interface ProjectUpdateData {
   value?: number;
   clientId?: string;
   contractorId?: string;
+  finances?: {
+    contractValue?: number;
+    completedValue?: number;
+    laborCost?: number;
+    expenseCost?: number;
+  };
 }
 
 export interface ScopeCreateData {

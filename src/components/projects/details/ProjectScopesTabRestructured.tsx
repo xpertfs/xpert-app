@@ -42,7 +42,8 @@ interface ProjectScopesTabProps {
   project: Project;
 }
 
-const ProjectScopesTabRestructured: React.FC<ProjectScopesTabProps> = ({ project }) => {
+const ProjectScopesTabRestructured: React.FC<ProjectScopesTabProps> = ({ project: initialProject }) => {
+  const [project, setProject] = useState<Project>(initialProject);
   const [scopes, setScopes] = useState<Scope[]>(project.scopes || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,6 +53,11 @@ const ProjectScopesTabRestructured: React.FC<ProjectScopesTabProps> = ({ project
   const [editingSubScope, setEditingSubScope] = useState<SubScope | null>(null);
   const [currentScopeId, setCurrentScopeId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | false>(false);
+
+  // Update scopes when project changes
+  useEffect(() => {
+    setScopes(project.scopes || []);
+  }, [project]);
 
   // Fetch scopes when component mounts
   useEffect(() => {
@@ -244,7 +250,10 @@ const ProjectScopesTabRestructured: React.FC<ProjectScopesTabProps> = ({ project
   };
 
   // Handle updating work item quantities for a sub-scope
-  const handleUpdateWorkItemQuantities = () => {
+  const handleUpdateWorkItemQuantities = (updatedProject?: Project) => {
+    if (updatedProject) {
+      setProject(updatedProject);
+    }
     // Refresh scopes to get updated data
     fetchScopes();
   };

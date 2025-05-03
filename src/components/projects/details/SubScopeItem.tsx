@@ -29,6 +29,8 @@ import {
 } from '@mui/icons-material';
 import { SubScope } from '../../../services/project.service';
 import workItemService from '../../../services/workitem.service';
+import projectService from '../../../services/project.service';
+import { Project } from '../../../services/project.service';
 
 interface SubScopeItemProps {
   projectId: string;
@@ -36,7 +38,7 @@ interface SubScopeItemProps {
   subScope: SubScope;
   onEdit: () => void;
   onDelete: () => void;
-  onUpdate: () => void;
+  onUpdate: (updatedProject?: Project) => void;
 }
 
 // Helper function to format currency
@@ -123,7 +125,7 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
             projectId,
             scopeId,
             subScope.id,
-            workItemQuantity.workItemId, // Make sure this is correctly used
+            workItemQuantity.workItemId,
             { 
               workItemId: workItemQuantity.workItemId,
               quantity,
@@ -136,14 +138,42 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
       });
       
       await Promise.all(promises);
+
+      // Get all scopes and sub-scopes to calculate total project value
+      const projectResponse = await projectService.getProjectById(projectId);
+      const allSubScopes = projectResponse.data.scopes.flatMap(scope => scope.subScopes);
+      
+      // Calculate total value across all sub-scopes
+      const totalValue = allSubScopes.reduce((projectSum, subScope) => {
+        const subScopeValue = subScope.workItemQuantities.reduce((sum, wiq) => {
+          return sum + (wiq.quantity * wiq.workItem.unitPrice);
+        }, 0);
+        return projectSum + subScopeValue;
+      }, 0);
+
+      await projectService.updateProject(projectId, {
+        value: totalValue,
+        finances: {
+          contractValue: totalValue,
+          completedValue: allSubScopes.reduce((sum, subScope) => {
+            return sum + subScope.workItemQuantities.reduce((subSum, wiq) => {
+              return subSum + (wiq.completed * wiq.workItem.unitPrice);
+            }, 0);
+          }, 0)
+        }
+      });
+      
+      // Fetch latest project data to ensure UI is updated
+      const updatedProject = await projectService.getProjectById(projectId);
+      
       setEditMode(false);
-      onUpdate();
+      onUpdate(updatedProject.data);
     } catch (error) {
       console.error('Error saving quantities:', error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   // Calculate completion percentage
   const calculateCompletion = () => {
