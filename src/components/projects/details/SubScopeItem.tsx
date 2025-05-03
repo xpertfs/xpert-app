@@ -178,12 +178,23 @@ const SubScopeItem: React.FC<SubScopeItemProps> = ({
                 {subScope.name} ({subScope.code})
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                
+                <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
+                  Total: {formatCurrency(subScope.workItemQuantities.reduce((sum, wiq) => 
+                    sum + (wiq.quantity * wiq.workItem.unitPrice), 0
+                  ))}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
+                  Completed: {formatCurrency(subScope.workItemQuantities.reduce((sum, wiq) => 
+                    sum + (wiq.completed * wiq.workItem.unitPrice), 0
+                  ))}
+                </Typography>
                 <LinearProgress
                   variant="determinate"
                   value={completionPercentage}
                   sx={{ width: 100, mr: 1, height: 6, borderRadius: 3 }}
                 />
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
                   {completionPercentage.toFixed(1)}% Complete
                 </Typography>
               </Box>
