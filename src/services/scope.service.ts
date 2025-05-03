@@ -64,12 +64,12 @@ const scopeService = {
   
   // Create a new sub-scope
   createSubScope: (projectId: string, scopeId: string, data: SubScopeCreateData) => {
-    return api.post<SubScope>(`/projects/${projectId}/scopes/${scopeId}/sub-scopes`, data);
+    return api.post<SubScope>(`/scopes/${scopeId}/sub-scopes`, data);
   },
   
   // Update an existing sub-scope
   updateSubScope: (projectId: string, scopeId: string, subScopeId: string, data: SubScopeUpdateData) => {
-    return api.put<SubScope>(`/projects/${projectId}/scopes/${scopeId}/sub-scopes/${subScopeId}`, data);
+    return api.put<SubScope>(`/scopes/${scopeId}/sub-scopes/${subScopeId}`, data);
   },
   
   // Delete a sub-scope
