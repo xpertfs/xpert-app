@@ -258,10 +258,17 @@ const Vendors = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    {vendor.city && vendor.state && (
-                      <Typography variant="body2">
-                        {vendor.city}, {vendor.state}
-                      </Typography>
+                    {vendor.address || vendor.city || vendor.state || vendor.zip ? (
+                      <Box>
+                        {vendor.address && (
+                          <Typography variant="body2">{vendor.address}</Typography>
+                        )}
+                        <Typography variant="body2" color="text.secondary">
+                          {[vendor.city, vendor.state, vendor.zip].filter(Boolean).join(', ') || '-'}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Typography color="text.secondary">-</Typography>
                     )}
                   </TableCell>
                   <TableCell>
