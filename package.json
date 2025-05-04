@@ -8,6 +8,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
+    "@mui/x-date-pickers": "^8.2.0",
     "@reduxjs/toolkit": "^2.6.1",
     "@tabler/icons-react": "^3.31.0",
     "@testing-library/dom": "^10.4.0",

@@ -186,8 +186,13 @@ const materialService = {
   },
 
   // Update a vendor price
-  updateVendorPrice: (materialId: string, priceId: string, data: Partial<VendorPriceCreateData>) => {
+  updateVendorPrice: (materialId: string, priceId: string, data: VendorPriceCreateData) => {
     return api.put<VendorPrice>(`/materials/${materialId}/prices/${priceId}`, data);
+  },
+
+  // Delete a vendor price
+  deleteVendorPrice: (materialId: string, priceId: string) => {
+    return api.delete(`/materials/${materialId}/prices/${priceId}`);
   },
 
   // Get best price for a material

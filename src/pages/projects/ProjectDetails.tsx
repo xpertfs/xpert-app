@@ -192,7 +192,7 @@ const ProjectDetails = () => {
       {tabValue === 1 && <ProjectWorkItemsTab project={project} />}
       {tabValue === 2 && <ProjectScopesTabRestructured project={project} />}  
       {tabValue === 3 && <ProjectLaborTab timeEntries={timeEntries} loading={timeEntriesLoading} />}
-      {tabValue === 4 && <ProjectExpensesTab expenses={expenses} loading={expensesLoading} />}
+      {tabValue === 4 && <ProjectExpensesTab projectId={project.id} />}
       {tabValue === 5 && <ProjectFinancialTab project={project} />}
     </Box>
   );

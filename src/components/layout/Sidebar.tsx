@@ -12,6 +12,7 @@ import {
   BusinessCenter,
   SupervisedUserCircle,
   Engineering,
+  Store,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme as useMuiTheme } from '@mui/material/styles';
@@ -33,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
     { text: 'Employees', icon: <People />, path: '/employees' },
     { text: 'Expenses', icon: <Receipt />, path: '/expenses' },
     { text: 'Materials', icon: <Inventory />, path: '/materials' },
+    { text: 'Vendors', icon: <Store />, path: '/vendors' },
     { text: 'Reports', icon: <BarChart />, path: '/reports' },
   ];
 

@@ -27,6 +27,7 @@ import Materials from './pages/Materials';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
+import Vendors from './pages/Vendors';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
               <Route path="employees" element={<Employees />} />
               <Route path="expenses" element={<Expenses />} />
               <Route path="materials" element={<Materials />} />
+              <Route path="vendors" element={<Vendors />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<Settings />} />
               <Route path="users" element={<Users />} />
