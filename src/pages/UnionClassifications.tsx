@@ -32,9 +32,10 @@ interface ExpandableRowProps {
   onAddCustomRate: () => void;
   onDelete: () => void;
   onRefresh: () => void;
+  isEven: boolean;
 }
 
-const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate, onAddCustomRate, onDelete, onRefresh }) => {
+const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate, onAddCustomRate, onDelete, onRefresh, isEven }) => {
   const [open, setOpen] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -70,7 +71,12 @@ const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate
 
   return (
     <>
-      <TableRow>
+      <TableRow sx={{ 
+        backgroundColor: isEven ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.01)',
+        '&:hover': {
+          backgroundColor: 'rgba(0, 0, 0, 0.08)',
+        },
+      }}>
         <TableCell>
           <IconButton size="small" onClick={() => setOpen(!open)}>
             {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -106,7 +112,10 @@ const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 2 }}>
+            <Box sx={{ 
+              margin: 2,
+              backgroundColor: isEven ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.01)',
+            }}>
               <Typography variant="h6" gutterBottom>Base Rates History</Typography>
               <Table size="small">
                 <TableHead>
@@ -152,6 +161,7 @@ const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate
                     <TableCell>Rate</TableCell>
                     <TableCell>Effective Date</TableCell>
                     <TableCell>End Date</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -276,8 +286,10 @@ const UnionClassifications: React.FC = () => {
     try {
       await unionClassService.deleteUnionClass(id);
       loadUnionClasses();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting union class:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to delete union class. Please try again.';
+      alert(errorMessage);
     }
   };
 
@@ -310,7 +322,7 @@ const UnionClassifications: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {unionClasses.map((unionClass) => (
+                {unionClasses.map((unionClass, index) => (
                   <ExpandableRow
                     key={unionClass.id}
                     unionClass={unionClass}
@@ -324,6 +336,7 @@ const UnionClassifications: React.FC = () => {
                     }}
                     onDelete={() => handleDeleteClass(unionClass.id)}
                     onRefresh={loadUnionClasses}
+                    isEven={index % 2 === 0}
                   />
                 ))}
               </TableBody>
