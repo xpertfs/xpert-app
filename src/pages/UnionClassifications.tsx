@@ -20,8 +20,22 @@ import {
   TextField,
   Typography,
   Collapse,
+  Chip,
+  Stack,
+  Divider,
+  Tooltip,
+  useTheme,
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, KeyboardArrowDown as ExpandMoreIcon, KeyboardArrowUp as ExpandLessIcon } from '@mui/icons-material';
+import { 
+  Add as AddIcon, 
+  Edit as EditIcon, 
+  Delete as DeleteIcon, 
+  KeyboardArrowDown as ExpandMoreIcon, 
+  KeyboardArrowUp as ExpandLessIcon,
+  AttachMoney as MoneyIcon,
+  Schedule as ScheduleIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { unionClassService, UnionClass, CreateUnionClassData, CreateBaseRateData, CreateCustomRateData } from '../services/unionClassService';
 import { format } from 'date-fns';
@@ -37,6 +51,7 @@ interface ExpandableRowProps {
 
 const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate, onAddCustomRate, onDelete, onRefresh, isEven }) => {
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'MM/dd/yyyy');
@@ -71,42 +86,86 @@ const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate
 
   return (
     <>
-      <TableRow sx={{ 
-        backgroundColor: isEven ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.01)',
-        '&:hover': {
-          backgroundColor: 'rgba(0, 0, 0, 0.08)',
-        },
-      }}>
+      <TableRow 
+        sx={{ 
+          backgroundColor: isEven ? 'rgba(0, 0, 0, 0.02)' : 'transparent',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          },
+          transition: 'background-color 0.2s',
+          '& td': {
+            paddingTop: 2,
+            paddingBottom: 2,
+          }
+        }}
+      >
         <TableCell>
-          <IconButton size="small" onClick={() => setOpen(!open)}>
-            {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          <IconButton 
+            size="small" 
+            onClick={() => setOpen(!open)}
+            sx={{
+              transition: 'transform 0.2s',
+              transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          >
+            <ExpandMoreIcon />
           </IconButton>
         </TableCell>
-        <TableCell>{unionClass.name}</TableCell>
-        <TableCell>{unionClass.baseRates.length}</TableCell>
-        <TableCell>{unionClass.customRates.length}</TableCell>
         <TableCell>
-          <Button
+          <Typography variant="h6" fontWeight="medium">
+            {unionClass.name}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Chip 
+            icon={<MoneyIcon />} 
+            label={`${unionClass.baseRates.length} Base Rates`}
             size="small"
-            onClick={onAddBaseRate}
-            sx={{ mr: 1 }}
-          >
-            Add Base Rate
-          </Button>
-          <Button
+            color="primary"
+            variant="outlined"
+          />
+        </TableCell>
+        <TableCell>
+          <Chip 
+            icon={<MoneyIcon />} 
+            label={`${unionClass.customRates.length} Custom Rates`}
             size="small"
-            onClick={onAddCustomRate}
-            sx={{ mr: 1 }}
-          >
-            Add Custom Rate
-          </Button>
-          <Button
-            size="small"
-            color="error"
-            onClick={onDelete}
-          >
-            Delete
-          </Button>
+            color="secondary"
+            variant="outlined"
+          />
+        </TableCell>
+        <TableCell>
+          <Stack direction="row" spacing={1}>
+            <Tooltip title="Add Base Rate">
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={onAddBaseRate}
+                startIcon={<AddIcon />}
+              >
+                Base Rate
+              </Button>
+            </Tooltip>
+            <Tooltip title="Add Custom Rate">
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={onAddCustomRate}
+                startIcon={<AddIcon />}
+              >
+                Custom Rate
+              </Button>
+            </Tooltip>
+            <Tooltip title="Delete Classification">
+              <IconButton
+                size="small"
+                color="error"
+                onClick={onDelete}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -114,79 +173,113 @@ const ExpandableRow: React.FC<ExpandableRowProps> = ({ unionClass, onAddBaseRate
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ 
               margin: 2,
-              backgroundColor: isEven ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.01)',
+              backgroundColor: theme.palette.background.default,
+              borderRadius: 1,
+              boxShadow: 1,
             }}>
-              <Typography variant="h6" gutterBottom>Base Rates History</Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Effective Date</TableCell>
-                    <TableCell>Regular Rate</TableCell>
-                    <TableCell>Overtime Rate</TableCell>
-                    <TableCell>Benefits Rate</TableCell>
-                    <TableCell>End Date</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {unionClass.baseRates
-                    .sort((a, b) => new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime())
-                    .map((rate) => (
-                      <TableRow key={rate.id}>
-                        <TableCell>{formatDate(rate.effectiveDate)}</TableCell>
-                        <TableCell>{formatCurrency(rate.regularRate)}</TableCell>
-                        <TableCell>{formatCurrency(rate.overtimeRate)}</TableCell>
-                        <TableCell>{formatCurrency(rate.benefitsRate)}</TableCell>
-                        <TableCell>{rate.endDate ? formatDate(rate.endDate) : 'Current'}</TableCell>
-                        <TableCell>
-                          <Button
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeleteBaseRate(rate.id)}
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <MoneyIcon color="primary" />
+                    Base Rates History
+                  </Typography>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Effective Date</TableCell>
+                        <TableCell>Regular Rate</TableCell>
+                        <TableCell>Overtime Rate</TableCell>
+                        <TableCell>Benefits Rate</TableCell>
+                        <TableCell>End Date</TableCell>
+                        <TableCell align="right">Actions</TableCell>
                       </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
+                    </TableHead>
+                    <TableBody>
+                      {unionClass.baseRates
+                        .sort((a, b) => new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime())
+                        .map((rate) => (
+                          <TableRow key={rate.id} hover>
+                            <TableCell>
+                              <Stack direction="row" alignItems="center" spacing={1}>
+                                <ScheduleIcon fontSize="small" color="action" />
+                                {formatDate(rate.effectiveDate)}
+                              </Stack>
+                            </TableCell>
+                            <TableCell>{formatCurrency(rate.regularRate)}</TableCell>
+                            <TableCell>{formatCurrency(rate.overtimeRate)}</TableCell>
+                            <TableCell>{formatCurrency(rate.benefitsRate)}</TableCell>
+                            <TableCell>
+                              {rate.endDate ? formatDate(rate.endDate) : 
+                                <Chip label="Current" size="small" color="success" />}
+                            </TableCell>
+                            <TableCell align="right">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDeleteBaseRate(rate.id)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
 
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>Custom Rates History</Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Rate</TableCell>
-                    <TableCell>Effective Date</TableCell>
-                    <TableCell>End Date</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {unionClass.customRates
-                    .sort((a, b) => new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime())
-                    .map((rate) => (
-                      <TableRow key={rate.id}>
-                        <TableCell>{rate.name}</TableCell>
-                        <TableCell>{rate.description}</TableCell>
-                        <TableCell>{formatCurrency(rate.rate)}</TableCell>
-                        <TableCell>{formatDate(rate.effectiveDate)}</TableCell>
-                        <TableCell>{rate.endDate ? formatDate(rate.endDate) : 'Current'}</TableCell>
-                        <TableCell>
-                          <Button
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeleteCustomRate(rate.id)}
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
+              <Card sx={{ mt: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <InfoIcon color="secondary" />
+                    Custom Rates History
+                  </Typography>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Description</TableCell>
+                        <TableCell>Rate</TableCell>
+                        <TableCell>Effective Date</TableCell>
+                        <TableCell>End Date</TableCell>
+                        <TableCell align="right">Actions</TableCell>
                       </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
+                    </TableHead>
+                    <TableBody>
+                      {unionClass.customRates
+                        .sort((a, b) => new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime())
+                        .map((rate) => (
+                          <TableRow key={rate.id} hover>
+                            <TableCell>
+                              <Typography variant="subtitle2">{rate.name}</Typography>
+                            </TableCell>
+                            <TableCell>{rate.description}</TableCell>
+                            <TableCell>{formatCurrency(rate.rate)}</TableCell>
+                            <TableCell>
+                              <Stack direction="row" alignItems="center" spacing={1}>
+                                <ScheduleIcon fontSize="small" color="action" />
+                                {formatDate(rate.effectiveDate)}
+                              </Stack>
+                            </TableCell>
+                            <TableCell>
+                              {rate.endDate ? formatDate(rate.endDate) : 
+                                <Chip label="Current" size="small" color="success" />}
+                            </TableCell>
+                            <TableCell align="right">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDeleteCustomRate(rate.id)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
             </Box>
           </Collapse>
         </TableCell>
@@ -297,69 +390,88 @@ const UnionClassifications: React.FC = () => {
     <Box sx={{ p: 3 }}>
       <Grid component="div" container spacing={3}>
         <Grid component="div" size={12}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h4">Union Classifications</Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setOpenClassDialog(true)}
-            >
-              Add Union Class
-            </Button>
-          </Box>
-        </Grid>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  Union Classifications
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => setOpenClassDialog(true)}
+                  size="large"
+                >
+                  Add Union Class
+                </Button>
+              </Box>
 
-        <Grid component="div" size={12}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell width={50} /> {/* Expand/Collapse cell */}
-                  <TableCell>Name</TableCell>
-                  <TableCell>Base Rates</TableCell>
-                  <TableCell>Custom Rates</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {unionClasses.map((unionClass, index) => (
-                  <ExpandableRow
-                    key={unionClass.id}
-                    unionClass={unionClass}
-                    onAddBaseRate={() => {
-                      setSelectedClass(unionClass);
-                      setOpenBaseRateDialog(true);
-                    }}
-                    onAddCustomRate={() => {
-                      setSelectedClass(unionClass);
-                      setOpenCustomRateDialog(true);
-                    }}
-                    onDelete={() => handleDeleteClass(unionClass.id)}
-                    onRefresh={loadUnionClasses}
-                    isEven={index % 2 === 0}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell width={50} />
+                      <TableCell>Name</TableCell>
+                      <TableCell>Base Rates</TableCell>
+                      <TableCell>Custom Rates</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {unionClasses.map((unionClass, index) => (
+                      <ExpandableRow
+                        key={unionClass.id}
+                        unionClass={unionClass}
+                        onAddBaseRate={() => {
+                          setSelectedClass(unionClass);
+                          setOpenBaseRateDialog(true);
+                        }}
+                        onAddCustomRate={() => {
+                          setSelectedClass(unionClass);
+                          setOpenCustomRateDialog(true);
+                        }}
+                        onDelete={() => handleDeleteClass(unionClass.id)}
+                        onRefresh={loadUnionClasses}
+                        isEven={index % 2 === 0}
+                      />
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
 
       {/* Add Union Class Dialog */}
-      <Dialog open={openClassDialog} onClose={() => setOpenClassDialog(false)}>
-        <DialogTitle>Add Union Class</DialogTitle>
+      <Dialog 
+        open={openClassDialog} 
+        onClose={() => setOpenClassDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AddIcon color="primary" />
+            Add Union Class
+          </Typography>
+        </DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            fullWidth
-            value={newClass.name}
-            onChange={(e) => setNewClass({ name: e.target.value })}
-          />
+          <Box sx={{ pt: 2 }}>
+            <TextField
+              autoFocus
+              label="Name"
+              fullWidth
+              value={newClass.name}
+              onChange={(e) => setNewClass({ name: e.target.value })}
+              variant="outlined"
+            />
+          </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenClassDialog(false)}>Cancel</Button>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setOpenClassDialog(false)} variant="outlined">
+            Cancel
+          </Button>
           <Button onClick={handleCreateClass} variant="contained">
             Create
           </Button>
@@ -367,10 +479,20 @@ const UnionClassifications: React.FC = () => {
       </Dialog>
 
       {/* Add Base Rate Dialog */}
-      <Dialog open={openBaseRateDialog} onClose={() => setOpenBaseRateDialog(false)}>
-        <DialogTitle>Add Base Rate</DialogTitle>
+      <Dialog 
+        open={openBaseRateDialog} 
+        onClose={() => setOpenBaseRateDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <MoneyIcon color="primary" />
+            Add Base Rate
+          </Typography>
+        </DialogTitle>
         <DialogContent>
-          <Grid component="div" container spacing={2}>
+          <Grid component="div" container spacing={3} sx={{ pt: 2 }}>
             <Grid component="div" size={12}>
               <TextField
                 label="Regular Rate"
@@ -378,6 +500,9 @@ const UnionClassifications: React.FC = () => {
                 fullWidth
                 value={newBaseRate.regularRate}
                 onChange={(e) => setNewBaseRate({ ...newBaseRate, regularRate: Number(e.target.value) })}
+                InputProps={{
+                  startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
+                }}
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -387,6 +512,9 @@ const UnionClassifications: React.FC = () => {
                 fullWidth
                 value={newBaseRate.overtimeRate}
                 onChange={(e) => setNewBaseRate({ ...newBaseRate, overtimeRate: Number(e.target.value) })}
+                InputProps={{
+                  startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
+                }}
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -396,6 +524,9 @@ const UnionClassifications: React.FC = () => {
                 fullWidth
                 value={newBaseRate.benefitsRate}
                 onChange={(e) => setNewBaseRate({ ...newBaseRate, benefitsRate: Number(e.target.value) })}
+                InputProps={{
+                  startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
+                }}
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -403,6 +534,11 @@ const UnionClassifications: React.FC = () => {
                 label="Effective Date"
                 value={new Date(newBaseRate.effectiveDate)}
                 onChange={(date) => setNewBaseRate({ ...newBaseRate, effectiveDate: date?.toISOString() || '' })}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  }
+                }}
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -412,6 +548,7 @@ const UnionClassifications: React.FC = () => {
                 onChange={(date) => setNewBaseRate({ ...newBaseRate, endDate: date?.toISOString() })}
                 slotProps={{
                   textField: {
+                    fullWidth: true,
                     helperText: 'Leave empty if this is the current rate'
                   }
                 }}
@@ -419,8 +556,10 @@ const UnionClassifications: React.FC = () => {
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenBaseRateDialog(false)}>Cancel</Button>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setOpenBaseRateDialog(false)} variant="outlined">
+            Cancel
+          </Button>
           <Button onClick={handleCreateBaseRate} variant="contained">
             Create
           </Button>
@@ -428,16 +567,27 @@ const UnionClassifications: React.FC = () => {
       </Dialog>
 
       {/* Add Custom Rate Dialog */}
-      <Dialog open={openCustomRateDialog} onClose={() => setOpenCustomRateDialog(false)}>
-        <DialogTitle>Add Custom Rate</DialogTitle>
+      <Dialog 
+        open={openCustomRateDialog} 
+        onClose={() => setOpenCustomRateDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <InfoIcon color="secondary" />
+            Add Custom Rate
+          </Typography>
+        </DialogTitle>
         <DialogContent>
-          <Grid component="div" container spacing={2}>
+          <Grid component="div" container spacing={3} sx={{ pt: 2 }}>
             <Grid component="div" size={12}>
               <TextField
                 label="Name"
                 fullWidth
                 value={newCustomRate.name}
                 onChange={(e) => setNewCustomRate({ ...newCustomRate, name: e.target.value })}
+                variant="outlined"
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -448,6 +598,7 @@ const UnionClassifications: React.FC = () => {
                 rows={2}
                 value={newCustomRate.description || ''}
                 onChange={(e) => setNewCustomRate({ ...newCustomRate, description: e.target.value })}
+                variant="outlined"
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -457,6 +608,9 @@ const UnionClassifications: React.FC = () => {
                 fullWidth
                 value={newCustomRate.rate}
                 onChange={(e) => setNewCustomRate({ ...newCustomRate, rate: Number(e.target.value) })}
+                InputProps={{
+                  startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
+                }}
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -464,6 +618,11 @@ const UnionClassifications: React.FC = () => {
                 label="Effective Date"
                 value={new Date(newCustomRate.effectiveDate)}
                 onChange={(date) => setNewCustomRate({ ...newCustomRate, effectiveDate: date?.toISOString() || '' })}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  }
+                }}
               />
             </Grid>
             <Grid component="div" size={12}>
@@ -473,6 +632,7 @@ const UnionClassifications: React.FC = () => {
                 onChange={(date) => setNewCustomRate({ ...newCustomRate, endDate: date?.toISOString() })}
                 slotProps={{
                   textField: {
+                    fullWidth: true,
                     helperText: 'Leave empty if this is the current rate'
                   }
                 }}
@@ -480,8 +640,10 @@ const UnionClassifications: React.FC = () => {
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenCustomRateDialog(false)}>Cancel</Button>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setOpenCustomRateDialog(false)} variant="outlined">
+            Cancel
+          </Button>
           <Button onClick={handleCreateCustomRate} variant="contained">
             Create
           </Button>

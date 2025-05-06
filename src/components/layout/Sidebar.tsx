@@ -33,7 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
     { text: 'Clients', icon: <BusinessCenter />, path: '/clients' },
     { text: 'Contractors', icon: <Engineering />, path: '/contractors' },
     { text: 'Employees', icon: <People />, path: '/employees' },
-    { text: 'Union Classes', icon: <Groups />, path: '/union-classifications' },
     { text: 'Expenses', icon: <Receipt />, path: '/expenses' },
     { text: 'Materials', icon: <Inventory />, path: '/materials' },
     { text: 'Vendors', icon: <Store />, path: '/vendors' },

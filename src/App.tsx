@@ -24,6 +24,7 @@ import ProjectEdit from './pages/projects/ProjectEdit';
 import Clients from './pages/Clients';
 import Contractors from './pages/Contractors';
 import Employees from './pages/Employees';
+import EmployeeList from './pages/employees/EmployeeList';
 import Expenses from './pages/Expenses';
 import Materials from './pages/Materials';
 import Reports from './pages/Reports';
@@ -63,14 +64,17 @@ function App() {
                   <Route path=":id/edit" element={<ProjectEdit />} />
                 </Route>
                 
-                <Route path="employees" element={<Employees />} />
+                <Route path="employees" element={<Employees />}>
+                  <Route index element={<EmployeeList />} />
+                  <Route path="union-classifications" element={<UnionClassifications />} />
+                </Route>
+                
                 <Route path="expenses" element={<Expenses />} />
                 <Route path="materials" element={<Materials />} />
                 <Route path="vendors" element={<Vendors />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="users" element={<Users />} />
-                <Route path="union-classifications" element={<UnionClassifications />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Route>
